@@ -22,203 +22,145 @@
  * hello@mbientlab.com.
  */
 
-
 import 'package:flutter_metawear/ForcedDataProducer.dart';
 import 'package:flutter_metawear/MetaWearBoard.dart';
-import 'package:flutter_metawear/builder/RouteComponent.dart';
+import 'package:flutter_metawear/builder/route_component.dart';
 
-/**
- * Common base class for all data processor editors
- * @author Eric Tsai
- */
-abstract class Editor { }
+/// Common base class for all data processor editors
 
-/**
- * Edits a fixed value comparator filter
- * @author Eric Tsai
- * @see RouteComponent#filter(Comparison, Number...)
- * @see RouteComponent#filter(Comparison, ComparisonOutput, Number...)
- */
+abstract class Editor {}
+
+/// Edits a fixed value comparator filter
+
+/// @see RouteComponent#filter(Comparison, Number...)
+/// @see RouteComponent#filter(Comparison, ComparisonOutput, Number...)
 abstract class ComparatorEditor extends Editor {
-    /**
-     * Modifies the references values and comparison operation
-     * @param op            New comparison operation
-     * @param references    New reference values, can be multiple values if the board is running
-     *                      firmware v1.2.3 or later
-     */
-    void modify(Comparison op, List<num> references);
+  /// Modifies the references values and comparison operation
+  /// @param op            New comparison operation
+  /// @param references    New reference values, can be multiple values if the board is running
+  ///                      firmware v1.2.3 or later
+  void modify(Comparison op, List<num> references);
 }
 
-/**
- * Edits a threshold filter
- * @author Eric Tsai
- * @see RouteComponent#filter(ThresholdOutput, Number)
- * @see RouteComponent#filter(ThresholdOutput, Number, Number)
- */
+/// Edits a threshold filter
+
+/// @see RouteComponent#filter(ThresholdOutput, Number)
+/// @see RouteComponent#filter(ThresholdOutput, Number, Number)
 abstract class ThresholdEditor extends Editor {
-    /**
-     * Modifies the threshold and hysteresis values
-     * @param threshold     New threshold value
-     * @param hysteresis    New hysteresis value
-     */
-    void modify(num threshold, num hysteresis);
+  /// Modifies the threshold and hysteresis values
+  /// @param threshold     New threshold value
+  /// @param hysteresis    New hysteresis value
+  void modify(num threshold, num hysteresis);
 }
 
-/**
- * Edits a differential filter
- * @author Eric Tsai
- * @see RouteComponent#filter(DifferentialOutput, Number)
- */
+/// Edits a differential filter
+
+/// @see RouteComponent#filter(DifferentialOutput, Number)
 abstract class DifferentialEditor extends Editor {
-    /**
-     * Modifies the minimum distance from the reference value
-     * @param distance    New minimum distance value
-     */
-    void modify(num distance);
+  /// Modifies the minimum distance from the reference value
+  /// @param distance    New minimum distance value
+  void modify(num distance);
 }
 
-/**
- * Edits a high or low pass processor
- * @author Eric Tsai
- * @see RouteComponent#lowpass(byte)
- * @see RouteComponent#highpass(byte)
- */
+/// Edits a high or low pass processor
+
+/// @see RouteComponent#lowpass(byte)
+/// @see RouteComponent#highpass(byte)
 abstract class AverageEditor extends Editor {
-    /**
-     * Change how many samples are used in the average calculation
-     * @param samples    New sample size
-     */
-    void modify(int samples);
+  /// Change how many samples are used in the average calculation
+  /// @param samples    New sample size
+  void modify(int samples);
 
-    /**
-     * Reset the running average
-     */
-    void reset();
+  /// Reset the running average
+  void reset();
 }
-/**
- * Edits a data processor created with the fixed value map construct
- * @author Eric Tsai
- * @see RouteComponent#map(Function2, Number)
- */
+
+/// Edits a data processor created with the fixed value map construct
+
+/// @see RouteComponent#map(Function2, Number)
 abstract class MapEditor extends Editor {
-    /**
-     * Modifies the right hand value used in the computation
-     * @param rhs    New right hand value
-     */
-    void modifyRhs(num rhs);
+  /// Modifies the right hand value used in the computation
+  /// @param rhs    New right hand value
+  void modifyRhs(num rhs);
 }
-/**
- * Edits an accumulator
- * @author Eric Tsai
- * @see RouteComponent#accumulate()
- */
+
+/// Edits an accumulator
+
+/// @see RouteComponent#accumulate()
 abstract class AccumulatorEditor extends Editor {
-    /**
-     * Reset the running sum
-     */
-    void reset();
+  /// Reset the running sum
+  void reset();
 
-    /**
-     * Overwrite the accumulated sum with a new value
-     * @param value    New accumulated sum
-     */
-    void set(num value);
+  /// Overwrite the accumulated sum with a new value
+  /// @param value    New accumulated sum
+  void set(num value);
 }
 
-/**
- * Edits a counter
- * @author Eric Tsai
- * @see RouteComponent#accumulate()
- */
+/// Edits a counter
+
+/// @see RouteComponent#accumulate()
 abstract class CounterEditor extends Editor {
-    /**
-     * Reset the internal counter
-     */
-    void reset();
+  /// Reset the internal counter
+  void reset();
 
-    /**
-     * Overwrite the internal counter with a new value
-     * @param value    New count value
-     */
-    void set(int value);
+  /// Overwrite the internal counter with a new value
+  /// @param value    New count value
+  void set(int value);
 }
 
-/**
- * Edits a time limiter
- * @author Eric Tsai
- * @see RouteComponent#limit(int)
- */
+/// Edits a time limiter
+
+/// @see RouteComponent#limit(int)
 abstract class TimeEditor extends Editor {
-    /**
-     * Change how often to allow data through
-     * @param period    New sampling delay
-     */
-    void modify(int period);
+  /// Change how often to allow data through
+  /// @param period    New sampling delay
+  void modify(int period);
 }
-/**
- * Edits a passthrough limiter
- * @author Eric Tsai
- * @see RouteComponent#limit(Passthrough, short)
- */
+
+/// Edits a passthrough limiter
+
+/// @see RouteComponent#limit(Passthrough, short)
 abstract class PassthroughEditor extends Editor {
-    /**
-     * Set the internal value
-     * @param value    New internal value
-     */
-    void set(int value);
+  /// Set the internal value
+  /// @param value    New internal value
+  void set(int value);
 
-    /**
-     * Changes the passthrough type and initial value
-     * @param type     New passthrough type to use
-     * @param value    Initial value of the modified filter
-     */
-    void modify(Passthrough type, int value);
+  /// Changes the passthrough type and initial value
+  /// @param type     New passthrough type to use
+  /// @param value    Initial value of the modified filter
+  void modify(Passthrough type, int value);
 }
-/**
- * Edits a pulse finder
- * @author Eric Tsai
- * @see RouteComponent#find(PulseOutput, Number, short)
- */
+
+/// Edits a pulse finder
+
+/// @see RouteComponent#find(PulseOutput, Number, short)
 abstract class PulseEditor extends Editor {
-    /**
-     * Change the criteria that classifies a pulse
-     * @param threshold    New boundary the data must exceed
-     * @param samples      New minimum data sample size
-     */
-    void modify(num threshold, int samples);
+  /// Change the criteria that classifies a pulse
+  /// @param threshold    New boundary the data must exceed
+  /// @param samples      New minimum data sample size
+  void modify(num threshold, int samples);
 }
-/**
- * Edits a data packer
- * @author Eric Tsai
- * @see RouteComponent#pack(byte)
- */
+
+/// Edits a data packer
+
+/// @see RouteComponent#pack(byte)
 abstract class PackerEditor extends Editor {
-    /**
-     * Clears buffer of accumulated inputs
-     */
-    void clear();
+  /// Clears buffer of accumulated inputs
+  void clear();
 }
 
-/**
- * Firmware feature that manipulates data on-board
- * @author Eric Tsai
- */
+/// Firmware feature that manipulates data on-board
+
 abstract class DataProcessor extends Module {
-    /**
-     * Edits a data processor
-     * @param name              Processor name to look up, set by {@link RouteComponent#name(String)}
-     * @param editorClass       Editor class to modify the processor with
-     * @param <T>               Runtime type the return value is casted as
-     * @return Editor object to modify the processor
-     */
-    T edit<T extends Editor>(String name);
+  /// Edits a data processor
+  /// @param name              Processor name to look up, set by {@link RouteComponent#name(String)}
+  /// @param editorClass       Editor class to modify the processor with
+  /// @param <T>               Runtime type the return value is casted as
+  /// @return Editor object to modify the processor
+  T edit<T extends Editor>(String name);
 
-    /**
-     * Gets a ForcedDataProducer for the processor's internal state
-     * @param name    Processor name to look up, set by {@link RouteComponent#name(String)}
-     * @return Object representing the processor state, null if the processor does not have a readable state
-     */
-    ForcedDataProducer state(String name);
-
-
+  /// Gets a ForcedDataProducer for the processor's internal state
+  /// @param name    Processor name to look up, set by {@link RouteComponent#name(String)}
+  /// @return Object representing the processor state, null if the processor does not have a readable state
+  ForcedDataProducer state(String name);
 }

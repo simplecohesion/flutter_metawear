@@ -22,7 +22,6 @@
  * hello@mbientlab.com.
  */
 
-
 import 'package:flutter_metawear/ConfigEditorBase.dart';
 import 'package:flutter_metawear/Configurable.dart';
 import 'package:flutter_metawear/ForcedDataProducer.dart';
@@ -30,113 +29,77 @@ import 'package:flutter_metawear/MetaWearBoard.dart';
 import 'package:quiver/core.dart';
 import 'package:sprintf/sprintf.dart';
 
+/// Analog gain scales
 
-/**
- * Analog gain scales
- * @author Eric Tsai
- */
-enum Gain {
-    TCS34725_1X,
-    TCS34725_4X,
-    TCS34725_16X,
-    TCS34725_60X
-}
+enum Gain { TCS34725_1X, TCS34725_4X, TCS34725_16X, TCS34725_60X }
 
+/// Configurable parameters for the color detector
 
-
-/**
- * Configurable parameters for the color detector
- * @author Eric Tsai
- */
 abstract class ConfigEditor extends ConfigEditorBase {
-    /**
-     * Set the integration time, which impacts both the resolution and sensitivity of the adc values.
-     * @param time    Between [2.4, 614.4] milliseconds
-     * @return Calling object
-     */
-    ConfigEditor integrationTime(double time);
+  /// Set the integration time, which impacts both the resolution and sensitivity of the adc values.
+  /// @param time    Between [2.4, 614.4] milliseconds
+  /// @return Calling object
+  ConfigEditor integrationTime(double time);
 
-    /**
-     * Set the analog gain
-     * @param gain    Gain scale
-     * @return Calling object
-     */
-    ConfigEditor gain(Gain gain);
+  /// Set the analog gain
+  /// @param gain    Gain scale
+  /// @return Calling object
+  ConfigEditor gain(Gain gain);
 
-    /**
-     * Enable the illuminator LED
-     * @return Calling object
-     */
-    ConfigEditor enableIlluminatorLed();
+  /// Enable the illuminator LED
+  /// @return Calling object
+  ConfigEditor enableIlluminatorLed();
 }
 
+/// Wrapper class encapsulating adc data from the sensor
 
-/**
- * Wrapper class encapsulating adc data from the sensor
- * @author Eric Tsai
- */
 class ColorAdc {
-    final int clear, red, green, blue;
+  final int clear, red, green, blue;
 
-    ColorAdc(this.clear, this.red, this.green, this.blue);
+  ColorAdc(this.clear, this.red, this.green, this.blue);
 
-    @override
-    String toString() =>
-        sprintf("{clear: %d, red: %d, green: %d, blue: %d}",
-            [this.clear, this.red, this.green, this.blue]);
+  @override
+  String toString() => sprintf("{clear: %d, red: %d, green: %d, blue: %d}",
+      [this.clear, this.red, this.green, this.blue]);
 
-    @override
-    bool operator ==(other) =>
-        other is ColorAdc && this.clear == other.clear &&
-            this.red == other.red && this.green == other.green &&
-            this.blue == other.blue;
+  @override
+  bool operator ==(other) =>
+      other is ColorAdc &&
+      this.clear == other.clear &&
+      this.red == other.red &&
+      this.green == other.green &&
+      this.blue == other.blue;
 
-    @override
-    int get hashCode => hash4(clear, red, green, blue);
-
+  @override
+  int get hashCode => hash4(clear, red, green, blue);
 }
 
-/**
- * Extension of the {@link ForcedDataProducer} interface providing names for the component values
- * of the color adc data
- * @author Eric Tsai
- */
+/// Extension of the {@link ForcedDataProducer} interface providing names for the component values
+/// of the color adc data
+
 abstract class ColorAdcDataProducer implements ForcedDataProducer {
-    /**
-     * Get the name for clear adc data
-     * @return Clear adc data name
-     */
-    String clearName();
+  /// Get the name for clear adc data
+  /// @return Clear adc data name
+  String clearName();
 
-    /**
-     * Get the name for red adc data
-     * @return Red adc data name
-     */
-    String redName();
+  /// Get the name for red adc data
+  /// @return Red adc data name
+  String redName();
 
-    /**
-     * Get the name for green adc data
-     * @return Green adc data name
-     */
-    String greenName();
+  /// Get the name for green adc data
+  /// @return Green adc data name
+  String greenName();
 
-    /**
-     * Get the name for blue adc data
-     * @return Blue adc data name
-     */
-    String blueName();
+  /// Get the name for blue adc data
+  /// @return Blue adc data name
+  String blueName();
 }
 
-/**
- * Color light-to-digital converter by TAOS that can sense red, green, blue, and clear light
- * @author Eric Tsai
- */
-abstract class ColorTcs34725 extends Module implements Configurable<ConfigEditor> {
+/// Color light-to-digital converter by TAOS that can sense red, green, blue, and clear light
 
-    /**
-     * Get an implementation of the ColorAdcDataProducer interface, represented by the {@link ColorAdc} class
-     * @return Object managing the adc data
-     */
-    ColorAdcDataProducer adc();
+abstract class ColorTcs34725 extends Module
+    implements Configurable<ConfigEditor> {
+  /// Get an implementation of the ColorAdcDataProducer interface, represented by the {@link ColorAdc} class
+  /// @return Object managing the adc data
+  ColorAdcDataProducer adc();
 }
-

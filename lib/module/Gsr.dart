@@ -27,55 +27,33 @@ import 'package:flutter_metawear/Configurable.dart';
 import 'package:flutter_metawear/ForcedDataProducer.dart';
 import 'package:flutter_metawear/MetaWearBoard.dart';
 
-/**
- * Voltages that can be applied to the GSR electrodes
- */
-enum ConstantVoltage {
-    CV_500MV,
-    CV_250MV
-}
-/**
- * Gains that can be applied to the GSR circuit
- */
-enum Gain {
-    GSR_499K,
-    GSR_1M
-}
+/// Voltages that can be applied to the GSR electrodes
+enum ConstantVoltage { CV_500MV, CV_250MV }
 
+/// Gains that can be applied to the GSR circuit
+enum Gain { GSR_499K, GSR_1M }
 
-/**
- * Interface for configuring GSR settings
- */
+/// Interface for configuring GSR settings
 abstract class ConfigEditor extends ConfigEditorBase {
-/**
- * Sets the constant voltage applied to the electrodes
- * @param cv    New constant voltage value
- * @return Calling object
- */
-ConfigEditor constantVoltage(ConstantVoltage cv);
-/**
- * Sets the gain applied to the circuit
- * @param gain    New gain value
- * @return Calling object
- */
-ConfigEditor gain(Gain gain);
+  /// Sets the constant voltage applied to the electrodes
+  /// @param cv    New constant voltage value
+  /// @return Calling object
+  ConfigEditor constantVoltage(ConstantVoltage cv);
+
+  /// Sets the gain applied to the circuit
+  /// @param gain    New gain value
+  /// @return Calling object
+  ConfigEditor gain(Gain gain);
 }
 
-/**
- * Interacts with a GSR (galvanic skin response) sensor
- * @author Eric Tsai
- */
+/// Interacts with a GSR (galvanic skin response) sensor
+
 abstract class Gsr extends Module implements Configurable<ConfigEditor> {
+  /// Gets a list of available conductance channels
+  /// @return List of available conductance channels
+  List<ForcedDataProducer> channels();
 
-
-    /**
-     * Gets a list of available conductance channels
-     * @return List of available conductance channels
-     */
-    List<ForcedDataProducer> channels();
-    /**
-     * Initiates automatic calibration.  This should be done before the first conductance read or
-     * if there are changes in temperature
-     */
-    void calibrate();
+  /// Initiates automatic calibration.  This should be done before the first conductance read or
+  /// if there are changes in temperature
+  void calibrate();
 }

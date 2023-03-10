@@ -22,39 +22,28 @@
  * hello@mbientlab.com.
  */
 
-
 import 'package:flutter_metawear/ForcedDataProducer.dart';
 import 'package:flutter_metawear/MetaWearBoard.dart';
 
-/**
- * Available oversampling settings for the sensor
- * @author Eric Tsai
- */
+/// Available oversampling settings for the sensor
+
 enum OversamplingMode {
-    SETTING_1X,
-    SETTING_2X,
-    SETTING_4X,
-    SETTING_8X,
-    SETTING_16X
+  SETTING_1X,
+  SETTING_2X,
+  SETTING_4X,
+  SETTING_8X,
+  SETTING_16X
 }
 
+/// Sensor on the BME280 environmental sensor measuring relative humidity
 
-/**
- * Sensor on the BME280 environmental sensor measuring relative humidity
- * @author Eric Tsai
- */
 abstract class HumidityBme280 extends Module {
+  /// Set oversampling mode
+  /// @param mode    New mode to use
+  void setOversampling(OversamplingMode mode);
 
-    /**
-     * Set oversampling mode
-     * @param mode    New mode to use
-     */
-    void setOversampling(OversamplingMode mode);
-
-    /**
-     * Get an implementation of the ForcedDataProducer interface for the relative humidity values,
-     * represented as a float.
-     * @return Object representing relative humidity
-     */
-    ForcedDataProducer value();
+  /// Get an implementation of the ForcedDataProducer interface for the relative humidity values,
+  /// represented as a float.
+  /// @return Object representing relative humidity
+  ForcedDataProducer value();
 }

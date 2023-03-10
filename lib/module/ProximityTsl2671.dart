@@ -22,78 +22,64 @@
  * hello@mbientlab.com.
  */
 
-
 import 'package:flutter_metawear/ConfigEditorBase.dart';
 import 'package:flutter_metawear/Configurable.dart';
 import 'package:flutter_metawear/ForcedDataProducer.dart';
 import 'package:flutter_metawear/MetaWearBoard.dart';
 import 'package:flutter_metawear/module/ProximityTsl2671.dart';
 
-/**
- * Photodiodes the sensor should use for proximity detection
- * @author Eric Tsai
- */
+/// Photodiodes the sensor should use for proximity detection
+
 enum ReceiverDiode {
-    /** Use the channel 0 diode, which is responsive to both visible and infrared light */
-    CHANNEL_0,
-    /** Use the channel 1 diode, which is responsive primarily to infrared light */
-    CHANNEL_1,
-    /** Use both photodiodes */
-    BOTH
+  /// Use the channel 0 diode, which is responsive to both visible and infrared light
+  CHANNEL_0,
+
+  /// Use the channel 1 diode, which is responsive primarily to infrared light
+  CHANNEL_1,
+
+  /// Use both photodiodes
+  BOTH
 }
-/**
- * Amount of current to drive the sensor
- * @author Eric Tsai
- */
+
+/// Amount of current to drive the sensor
+
 enum TransmitterDriveCurrent {
-    CURRENT_100MA,
-    CURRENT_50MA,
-    CURRENT_25MA,
-    CURRENT_12_5MA,
+  CURRENT_100MA,
+  CURRENT_50MA,
+  CURRENT_25MA,
+  CURRENT_12_5MA,
 }
 
-/**
- * Interface for configuring the sensor
- * @author Eric Tsai
- */
+/// Interface for configuring the sensor
+
 abstract class ConfigEditor extends ConfigEditorBase {
-    /**
-     * Set the integration time
-     * @param time    Period of time, in milliseconds, the internal ADC converts the analog signal into digital counts.  Minimum 2.72ms
-     * @return Calling object
-     */
-    ConfigEditor integrationTime(double time);
-    /**
-     * Set the pulse count.  Sensitivity grows by the square root of the number of pulses
-     * @param nPulses    Number of pulses to use for detection, between [1, 255]
-     * @return Calling object
-     */
-    ConfigEditor pulseCount(int nPulses);
-    /**
-     * Set the photodiode for responding to light
-     * @param diode    Photodiode to use
-     * @return Calling object
-     */
-    ConfigEditor receiverDiode(ReceiverDiode diode);
-    /**
-     * Set the led drive current.  For boards powered by the CR2032 battery, it is recommended to use 25mA or less.
-     * @param current    Current driving the sensor
-     * @return Calling object
-     */
-    ConfigEditor transmitterDriveCurrent(TransmitterDriveCurrent current);
+  /// Set the integration time
+  /// @param time    Period of time, in milliseconds, the internal ADC converts the analog signal into digital counts.  Minimum 2.72ms
+  /// @return Calling object
+  ConfigEditor integrationTime(double time);
+
+  /// Set the pulse count.  Sensitivity grows by the square root of the number of pulses
+  /// @param nPulses    Number of pulses to use for detection, between [1, 255]
+  /// @return Calling object
+  ConfigEditor pulseCount(int nPulses);
+
+  /// Set the photodiode for responding to light
+  /// @param diode    Photodiode to use
+  /// @return Calling object
+  ConfigEditor receiverDiode(ReceiverDiode diode);
+
+  /// Set the led drive current.  For boards powered by the CR2032 battery, it is recommended to use 25mA or less.
+  /// @param current    Current driving the sensor
+  /// @return Calling object
+  ConfigEditor transmitterDriveCurrent(TransmitterDriveCurrent current);
 }
 
-/**
- * Digital proximity detector for short-distance detection by AMS
- * @author Eric Tsai
- */
-abstract class ProximityTsl2671 extends Module implements Configurable<ConfigEditor> {
+/// Digital proximity detector for short-distance detection by AMS
 
-    /**
-     * Get an implementation of the ForcedDataProducer interface for proximity ADC values, represented as
-     * an integer.
-     * @return Object managing the proximity data
-     */
-    ForcedDataProducer adc();
+abstract class ProximityTsl2671 extends Module
+    implements Configurable<ConfigEditor> {
+  /// Get an implementation of the ForcedDataProducer interface for proximity ADC values, represented as
+  /// an integer.
+  /// @return Object managing the proximity data
+  ForcedDataProducer adc();
 }
-

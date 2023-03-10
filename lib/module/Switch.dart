@@ -25,16 +25,12 @@
 import 'package:flutter_metawear/ActiveDataProducer.dart';
 import 'package:flutter_metawear/MetaWearBoard.dart';
 
-/**
- * On-board push button switch
- * @author Eric Tsai
- */
+/// On-board push button switch
+
 abstract class Switch implements Module {
-    /**
-     * Get an implementation of the ActiveDataProducer interface for the button state, represented as
-     * a boolean (true = pressed, false = released) or byte (1 = pressed, 0 = released)
-     * @return Object for the switch state
-     */
-    ActiveDataProducer state();
-    Future<int> readCurrentStateAsync();
+  /// Get an implementation of the ActiveDataProducer interface for the button state, represented as
+  /// a boolean (true = pressed, false = released) or byte (1 = pressed, 0 = released)
+  /// @return Object for the switch state
+  ActiveDataProducer state();
+  Future<int> readCurrentStateAsync();
 }

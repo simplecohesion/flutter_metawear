@@ -21,15 +21,13 @@
  * Should you have any questions regarding your right to use this Software, contact MbientLab via email:
  * hello@mbientlab.com.
  */
-/**
- * Exception indicating that an invalid firmware file was attempted to be paired with the board
- * @author Eric Tsai
- */
+/// Exception indicating that an invalid firmware file was attempted to be paired with the board
+
 class IllegalFirmwareFile implements Exception {
 //    private static final long serialVersionUID = -6711055411857745594L;
-    final String message;
+  final String message;
 
-    IllegalFirmwareFile({this.message});
+  IllegalFirmwareFile({required this.message});
 
-    String toString() => "IllegalFirmwareFile: $message";
+  String toString() => "IllegalFirmwareFile: $message";
 }

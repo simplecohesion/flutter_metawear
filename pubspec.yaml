@@ -1,19 +1,21 @@
 name: flutter_metawear
 description: A wrapper that interfaces with Metawear
 version: 0.5.0
-author: Michael Pollind <polli104@mail.chapman.edu>
 homepage: https://github.com/pauldemarco/flutter_blue
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: '>=2.18.2 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  convert: ^2.1.1
-  sprintf: ^4.0.0
-  flutter_blue: ^0.5.0
-  tuple: ^1.0.2
+  sprintf: ^7.0.0
+  flutter_blue: ^0.8.0
+  tuple: ^2.0.1
+  vector_math: ^2.1.4
+  collection: ^1.17.0
+  convert: ^3.1.1
+  archive: ^3.3.6
 
 flutter:
   plugin:

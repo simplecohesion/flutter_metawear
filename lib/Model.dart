@@ -22,20 +22,18 @@
  * hello@mbientlab.com.
  */
 
-/**
- * Available MetaWear models
- * @author Eric Tsai
- */
+/// Available MetaWear models
+
 enum Model {
-    METAWEAR_R,
-    METAWEAR_RG,
-    METAWEAR_RPRO,
-    METAWEAR_C,
-    METAWEAR_CPRO,
-    METAENV,
-    METADETECT,
-    METAHEALTH,
-    METATRACKER,
-    METAMOTION_R,
-    METAMOTION_C
+  METAWEAR_R,
+  METAWEAR_RG,
+  METAWEAR_RPRO,
+  METAWEAR_C,
+  METAWEAR_CPRO,
+  METAENV,
+  METADETECT,
+  METAHEALTH,
+  METATRACKER,
+  METAMOTION_R,
+  METAMOTION_C
 }

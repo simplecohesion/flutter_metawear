@@ -22,91 +22,69 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/AsyncDataProducer.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
 import 'package:flutter_metawear/ConfigEditorBase.dart';
 import 'package:flutter_metawear/Configurable.dart';
 import 'package:flutter_metawear/MetaWearBoard.dart';
-/**
- * Supported oversampling modes on a Bosch barometer
- * @author Eric Tsai
- */
+
+/// Supported oversampling modes on a Bosch barometer
+
 enum OversamplingMode {
-    SKIP,
-    ULTRA_LOW_POWER,
-    LOW_POWER,
-    STANDARD,
-    HIGH,
-    ULTRA_HIGH
-}
-/**
- * Available IIR (infinite impulse response) filter coefficient for the Bosch pressure sensors
- * @author Eric Tsai
- */
-enum FilterCoeff {
-    OFF,
-    AVG_2,
-    AVG_4,
-    AVG_8,
-    AVG_16
+  SKIP,
+  ULTRA_LOW_POWER,
+  LOW_POWER,
+  STANDARD,
+  HIGH,
+  ULTRA_HIGH
 }
 
-/**
- * Barometer agnostic interface for configuring the sensor
- * @param <T>    Type of barometer config editor
- */
+/// Available IIR (infinite impulse response) filter coefficient for the Bosch pressure sensors
+
+enum FilterCoeff { OFF, AVG_2, AVG_4, AVG_8, AVG_16 }
+
+/// Barometer agnostic interface for configuring the sensor
+/// @param <T>    Type of barometer config editor
 abstract class ConfigEditor<T> extends ConfigEditorBase {
-    /**
-     * Set the oversampling mode for pressure sampling
-     * @param mode    New oversampling mode
-     * @return Calling object
-     */
-    T pressureOversampling(OversamplingMode mode);
+  /// Set the oversampling mode for pressure sampling
+  /// @param mode    New oversampling mode
+  /// @return Calling object
+  T pressureOversampling(OversamplingMode mode);
 
-    /**
-     * Set the IIR coefficient for pressure sampling
-     * @param coeff    New filter coefficient
-     * @return Calling object
-     */
-    T filterCoeff(FilterCoeff coeff);
+  /// Set the IIR coefficient for pressure sampling
+  /// @param coeff    New filter coefficient
+  /// @return Calling object
+  T filterCoeff(FilterCoeff coeff);
 
-    /**
+  /**
      * Set the standby time.  The closest, valid standby time will be chosen
      * depending on the underlying sensor
      * @param time    New standby time
      * @return Calling object
      */
-   // T standbyTime(double time);
+  // T standbyTime(double time);
 }
 
-/**
- * Absolute barometric pressure sensor by Bosch.  This interface provides general access to a Bosch
- * barometer. If you know specifically which barometer is on your board, use the appropriate subclass
- * instead.
- * @author Eric Tsai
- * @see BarometerBme280
- * @see BarometerBmp280
- */
-abstract class BarometerBosch<T extends ConfigEditor> extends Module implements Configurable<T> {
+/// Absolute barometric pressure sensor by Bosch.  This interface provides general access to a Bosch
+/// barometer. If you know specifically which barometer is on your board, use the appropriate subclass
+/// instead.
 
-    /**
-     * Get an implementation of the AsyncDataProducer interface for pressure data, represented as a
-     * float in units of Pascals (pa)
-     * @return Object controlling pressure data
-     */
-    AsyncDataProducer pressure();
-    /**
-     * Get an implementation of the AsyncDataProducer interface for altitude data, represented as a
-     * float in units of meters (m)
-     * @return Object controlling altitude data
-     */
-    AsyncDataProducer altitude();
+/// @see BarometerBme280
+/// @see BarometerBmp280
+abstract class BarometerBosch<T extends ConfigEditor> extends Module
+    implements Configurable<T> {
+  /// Get an implementation of the AsyncDataProducer interface for pressure data, represented as a
+  /// float in units of Pascals (pa)
+  /// @return Object controlling pressure data
+  AsyncDataProducer pressure();
 
-    /**
-     * Start data sampling
-     */
-    void start();
-    /**
-     * Stop data sampling
-     */
-    void stop();
+  /// Get an implementation of the AsyncDataProducer interface for altitude data, represented as a
+  /// float in units of meters (m)
+  /// @return Object controlling altitude data
+  AsyncDataProducer altitude();
+
+  /// Start data sampling
+  void start();
+
+  /// Stop data sampling
+  void stop();
 }

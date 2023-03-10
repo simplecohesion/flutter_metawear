@@ -22,7 +22,7 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleImplBase.dart';
@@ -35,158 +35,159 @@ import 'dart:typed_data';
 import 'package:flutter_metawear/Route.dart';
 import 'package:sprintf/sprintf.dart';
 
-
 class TempSFloatData extends SFloatData {
-    TempSFloatData.ById(int id): super(ModuleType.TEMPERATURE, Util.setSilentRead(TemperatureImpl.VALUE), new DataAttributes(Uint8List.fromList([2]), 1, 0, true),id:id);
+  TempSFloatData.ById(int id)
+      : super(ModuleType.TEMPERATURE, Util.setSilentRead(TemperatureImpl.VALUE),
+            new DataAttributes(Uint8List.fromList([2]), 1, 0, true),
+            id: id);
 
+  TempSFloatData(DataTypeBase input, ModuleType module, int register, int id,
+      DataAttributes attributes)
+      : super(module, register, attributes, id: id, input: input);
 
-    TempSFloatData(DataTypeBase input, ModuleType module, int register, int id, DataAttributes attributes): super(module, register, attributes,id:id,input:input);
+  @override
+  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
+      DataAttributes attributes) {
+    return new TempSFloatData(input, module, register, id, attributes);
+  }
 
-
-    @override
-    DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id, DataAttributes attributes) {
-        return new TempSFloatData(input, module, register, id, attributes);
-    }
-
-    @override
-    double scale(MetaWearBoardPrivate mwPrivate) {
-        return 8.0;
-    }
+  @override
+  double scale(MetaWearBoardPrivate mwPrivate) {
+    return 8.0;
+  }
 }
 
-class SensorImpl implements Sensor{
+class SensorImpl implements Sensor {
+  final SensorType _type;
+  final int channel;
+  MetaWearBoardPrivate mwPrivate;
 
-    final SensorType _type;
-    final int channel;
-    MetaWearBoardPrivate mwPrivate;
+  SensorImpl(this._type, this.channel, this.mwPrivate) {
+    mwPrivate.tagProducer(name(), new TempSFloatData.ById(channel));
+  }
 
-    SensorImpl(this._type, this.channel, this.mwPrivate) {
-        mwPrivate.tagProducer(name(), new TempSFloatData.ById(channel));
-    }
+  void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
+    this.mwPrivate = mwPrivate;
+  }
 
-    void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
-        this.mwPrivate = mwPrivate;
-    }
+  @override
+  Future<Route> addRouteAsync(RouteBuilder builder) {
+    return mwPrivate.queueRouteBuilder(builder, name());
+  }
 
-    @override
-    Future<Route> addRouteAsync(RouteBuilder builder) {
-        return mwPrivate.queueRouteBuilder(builder, name());
-    }
+  @override
+  String name() {
+    return sprintf(TemperatureImpl.PRODUCER_FORMAT, channel);
+  }
 
-    @override
-    String name() {
-        return sprintf(TemperatureImpl.PRODUCER_FORMAT, channel);
-    }
+  @override
+  void read() {
+    mwPrivate.lookupProducer(name()).read(mwPrivate);
+  }
 
-    @override
-    void read() {
-        mwPrivate.lookupProducer(name()).read(mwPrivate);
-    }
-
-    @override
-    SensorType type() {
-        return _type;
-    }
+  @override
+  SensorType type() {
+    return _type;
+  }
 }
 
 class ExternalThermistorImpl extends SensorImpl implements ExternalThermistor {
+  ExternalThermistorImpl(int channel, MetaWearBoardPrivate mwPrivate)
+      : super(SensorType.EXT_THERMISTOR, channel, mwPrivate);
 
-    ExternalThermistorImpl(int channel, MetaWearBoardPrivate mwPrivate) : super(SensorType.EXT_THERMISTOR, channel, mwPrivate);
-
-
-    @override
-    void configure(int dataPin, int pulldownPin, bool activeHigh) {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.TEMPERATURE.id, TemperatureImpl.MODE, channel, dataPin, pulldownPin, (activeHigh ? 1 : 0)]));
-    }
+  @override
+  void configure(int dataPin, int pulldownPin, bool activeHigh) {
+    mwPrivate.sendCommand(Uint8List.fromList([
+      ModuleType.TEMPERATURE.id,
+      TemperatureImpl.MODE,
+      channel,
+      dataPin,
+      pulldownPin,
+      (activeHigh ? 1 : 0)
+    ]));
+  }
 }
-
 
 /**
  * Created by etsai on 9/18/16.
  */
 class TemperatureImpl extends ModuleImplBase implements Temperature {
-    static String createUri(DataTypeBase dataType) {
-        switch (Util.clearRead(dataType.eventConfig[1])) {
-            case VALUE:
-                return sprintf("temperature[%d]", dataType.eventConfig[2]);
-            default:
-                return null;
-        }
+  static String createUri(DataTypeBase dataType) {
+    switch (Util.clearRead(dataType.eventConfig[1])) {
+      case VALUE:
+        return sprintf("temperature[%d]", dataType.eventConfig[2]);
+      default:
+        return null;
+    }
+  }
+
+  static const String PRODUCER_FORMAT =
+      "com.mbientlab.metawear.impl.TemperatureImpl.PRODUCER_%d";
+  static const int VALUE = 1, MODE = 2;
+
+  final List<SensorImpl> sources;
+
+  TemperatureImpl(MetaWearBoardPrivate mwPrivate)
+      : sources = List<SensorImpl>(
+            mwPrivate.lookupModuleInfo(ModuleType.TEMPERATURE).extra.length),
+        super(mwPrivate) {
+    int channel = 0;
+    List<SensorType> sensorTypes = SensorType.values;
+    for (int type in mwPrivate.lookupModuleInfo(ModuleType.TEMPERATURE).extra) {
+      switch (sensorTypes[type]) {
+        case SensorType.NRF_SOC:
+          sources[channel] =
+              new SensorImpl(SensorType.NRF_SOC, channel, mwPrivate);
+          break;
+        case SensorType.EXT_THERMISTOR:
+          sources[channel] = new ExternalThermistorImpl(channel, mwPrivate);
+          break;
+        case SensorType.BOSCH_ENV:
+          sources[channel] =
+              new SensorImpl(SensorType.BOSCH_ENV, channel, mwPrivate);
+          break;
+        case SensorType.PRESET_THERMISTOR:
+          sources[channel] =
+              new SensorImpl(SensorType.PRESET_THERMISTOR, channel, mwPrivate);
+          break;
+      }
+      channel++;
+    }
+  }
+
+  @override
+  void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
+    super.restoreTransientVars(mwPrivate);
+
+    for (SensorImpl it in sources) {
+      it.restoreTransientVars(mwPrivate);
+    }
+  }
+
+  @override
+  List<Sensor> sensors() {
+    return sources;
+  }
+
+  @override
+  List<Sensor> findSensors(SensorType type) {
+    List<int> matchIndices = [];
+    for (int i = 0; i < sources.length; i++) {
+      if (sources[i].type() == type) {
+        matchIndices.add(i);
+      }
     }
 
-    static const String PRODUCER_FORMAT = "com.mbientlab.metawear.impl.TemperatureImpl.PRODUCER_%d";
-    static const int VALUE = 1,
-        MODE = 2;
-
-
-    final List<SensorImpl> sources;
-
-    TemperatureImpl(MetaWearBoardPrivate mwPrivate)
-        :sources = List<SensorImpl>(mwPrivate
-        .lookupModuleInfo(ModuleType.TEMPERATURE)
-        .extra
-        .length),
-            super(mwPrivate) {
-        int channel = 0;
-        List<SensorType> sensorTypes = SensorType.values;
-        for (int type in mwPrivate
-            .lookupModuleInfo(ModuleType.TEMPERATURE)
-            .extra) {
-            switch (sensorTypes[type]) {
-                case SensorType.NRF_SOC:
-                    sources[channel] =
-                    new SensorImpl(SensorType.NRF_SOC, channel, mwPrivate);
-                    break;
-                case SensorType.EXT_THERMISTOR:
-                    sources[channel] =
-                    new ExternalThermistorImpl(channel, mwPrivate);
-                    break;
-                case SensorType.BOSCH_ENV:
-                    sources[channel] =
-                    new SensorImpl(SensorType.BOSCH_ENV, channel, mwPrivate);
-                    break;
-                case SensorType.PRESET_THERMISTOR:
-                    sources[channel] = new SensorImpl(
-                        SensorType.PRESET_THERMISTOR, channel, mwPrivate);
-                    break;
-            }
-            channel++;
-        }
+    if (matchIndices.isEmpty) {
+      return null;
     }
 
-    @override
-    void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
-        super.restoreTransientVars(mwPrivate);
-
-        for (SensorImpl it in sources) {
-            it.restoreTransientVars(mwPrivate);
-        }
+    List<Sensor> matches = List<Sensor>(matchIndices.length);
+    int i = 0;
+    for (int it in matchIndices) {
+      matches[i] = sources[it];
+      i++;
     }
-
-    @override
-    List<Sensor> sensors() {
-        return sources;
-    }
-
-    @override
-    List<Sensor> findSensors(SensorType type) {
-        List<int> matchIndices = [];
-        for (int i = 0; i < sources.length; i++) {
-            if (sources[i].type() == type) {
-                matchIndices.add(i);
-            }
-        }
-
-        if (matchIndices.isEmpty) {
-            return null;
-        }
-
-        List<Sensor> matches = List<Sensor>(matchIndices.length);
-        int i = 0;
-        for (int it in matchIndices) {
-            matches[i] = sources[it];
-            i++;
-        }
-        return matches;
-    }
+    return matches;
+  }
 }

@@ -28,9 +28,9 @@ import 'dart:core';
 import 'dart:collection';
 
 import 'package:flutter_metawear/Subscriber.dart';
-import 'package:flutter_metawear/builder/RouteComponent.dart';
-import 'package:flutter_metawear/builder/RouteMulticast.dart';
-import 'package:flutter_metawear/builder/RouteSplit.dart';
+import 'package:flutter_metawear/builder/route_component.dart';
+import 'package:flutter_metawear/builder/route_multicast.dart';
+import 'package:flutter_metawear/builder/route_split.dart';
 import 'package:flutter_metawear/impl/ColorTcs34725Impl.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
@@ -43,309 +43,339 @@ import 'package:flutter_metawear/module/DataProcessor.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/IllegalRouteOperationException.dart';
-import 'package:flutter_metawear/builder/predicate/PulseOutput.dart';
+import 'package:flutter_metawear/builder/predicate/pulse_output.dart';
 
 import 'package:sprintf/sprintf.dart';
 import 'package:tuple/tuple.dart';
 
-
-enum BranchElement {
-    MULTICAST,
-    SPLIT
-}
+enum BranchElement { MULTICAST, SPLIT }
 
 class CounterEditorInner extends EditorImplBase implements CounterEditor {
+  CounterEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-    CounterEditorInner(DataProcessorConfig configObj, DataTypeBase source, MetaWearBoardPrivate mwPrivate):super(configObj,source,mwPrivate);
+  @override
+  void reset() {
+    mwPrivate.sendCommand(Uint8List.fromList([
+      ModuleType.DATA_PROCESSOR.id,
+      DataProcessorImpl.STATE,
+      source.eventConfig[2],
+      0x00,
+      0x00,
+      0x00,
+      0x00
+    ]));
+  }
 
-    @override
-    void reset() {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DATA_PROCESSOR.id, DataProcessorImpl.STATE, source.eventConfig[2],
-        0x00, 0x00, 0x00, 0x00]));
-    }
-
-    @override
-    void set(int value) {
-        Uint8List payload = Uint8List(7);
-        ByteData view = ByteData.view(payload.buffer);
-        view.setInt8(0, ModuleType.DATA_PROCESSOR.id);
-        view.setInt8(1, DataProcessorImpl.STATE);
-        view.setInt8(2, source.eventConfig[2]);
-        view.setInt32(3, value);
-        mwPrivate.sendCommand(payload);
-    }
-}
-class AccumulatorEditorInner extends EditorImplBase implements AccumulatorEditor {
-
-    AccumulatorEditorInner(DataProcessorConfig configObj, DataTypeBase source, MetaWearBoardPrivate mwPrivate) : super(configObj,source,mwPrivate);
-
-    @override
-    void reset() {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DATA_PROCESSOR.id, DataProcessorImpl.STATE, source.eventConfig[2], 0x00, 0x00, 0x00, 0x00]));
-    }
-
-    @override
-    void set(num value) {
-        int scaledValue = source.convertToFirmwareUnits(mwPrivate, value).floor();
-
-        Uint8List payload = Uint8List(7);
-        ByteData view = ByteData.view(payload.buffer);
-        view.setInt8(0, ModuleType.DATA_PROCESSOR.id);
-        view.setInt8(1, DataProcessorImpl.STATE);
-        view.setInt8(2, source.eventConfig[2]);
-        view.setInt32(3, scaledValue);
-
-        mwPrivate.sendCommand(payload);
-    }
+  @override
+  void set(int value) {
+    Uint8List payload = Uint8List(7);
+    ByteData view = ByteData.view(payload.buffer);
+    view.setInt8(0, ModuleType.DATA_PROCESSOR.id);
+    view.setInt8(1, DataProcessorImpl.STATE);
+    view.setInt8(2, source.eventConfig[2]);
+    view.setInt32(3, value);
+    mwPrivate.sendCommand(payload);
+  }
 }
 
+class AccumulatorEditorInner extends EditorImplBase
+    implements AccumulatorEditor {
+  AccumulatorEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-class DifferentialEditorInner extends EditorImplBase implements DifferentialEditor {
+  @override
+  void reset() {
+    mwPrivate.sendCommand(Uint8List.fromList([
+      ModuleType.DATA_PROCESSOR.id,
+      DataProcessorImpl.STATE,
+      source.eventConfig[2],
+      0x00,
+      0x00,
+      0x00,
+      0x00
+    ]));
+  }
 
-    DifferentialEditorInner(DataProcessorConfig configObj, DataTypeBase source,
-        MetaWearBoardPrivate mwPrivate) : super(configObj, source, mwPrivate);
+  @override
+  void set(num value) {
+    int scaledValue = source.convertToFirmwareUnits(mwPrivate, value).floor();
 
+    Uint8List payload = Uint8List(7);
+    ByteData view = ByteData.view(payload.buffer);
+    view.setInt8(0, ModuleType.DATA_PROCESSOR.id);
+    view.setInt8(1, DataProcessorImpl.STATE);
+    view.setInt8(2, source.eventConfig[2]);
+    view.setInt32(3, scaledValue);
 
-    @override
-    void modify(num distance) {
-        Uint8List newDiff = Uint8List(4);
-        ByteData.view(newDiff.buffer).setInt32(0, distance);
-        config.setAll(2, newDiff);
-        mwPrivate.sendCommandForModule(
-            ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,
-            source.eventConfig[2]);
-    }
+    mwPrivate.sendCommand(payload);
+  }
+}
+
+class DifferentialEditorInner extends EditorImplBase
+    implements DifferentialEditor {
+  DifferentialEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
+
+  @override
+  void modify(num distance) {
+    Uint8List newDiff = Uint8List(4);
+    ByteData.view(newDiff.buffer).setInt32(0, distance);
+    config.setAll(2, newDiff);
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
 
 class PackerEditorInner extends EditorImplBase implements PackerEditor {
-    PackerEditorInner(DataProcessorConfig configObj, DataTypeBase source, MetaWearBoardPrivate mwPrivate): super(configObj, source, mwPrivate);
+  PackerEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-    @override
-    void clear() {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DATA_PROCESSOR.id, DataProcessorImpl.STATE, source.eventConfig[2]]));
-    }
+  @override
+  void clear() {
+    mwPrivate.sendCommand(Uint8List.fromList([
+      ModuleType.DATA_PROCESSOR.id,
+      DataProcessorImpl.STATE,
+      source.eventConfig[2]
+    ]));
+  }
 }
 
 class Cache {
-    final List<Tuple3<DataTypeBase, Subscriber, bool>> subscribedProducers = List();
-    final List<Tuple2<String, Tuple3<DataTypeBase, int, Uint8List>>> feedback = List();
-    final List<Tuple2<DataTypeBase, Action>> reactions = List();
-    final List<Processor> dataProcessors = List();
-    final MetaWearBoardPrivate mwPrivate;
-    final Queue<RouteComponentImpl> stashedSignals= ListQueue();
-    final Queue<BranchElement> elements = ListQueue();
-    final Queue<Tuple2<RouteComponentImpl, List<DataTypeBase>>> splits = ListQueue();
-    final Map<String, Processor> taggedProcessors = Map();
+  final List<Tuple3<DataTypeBase, Subscriber, bool>> subscribedProducers =
+      List();
+  final List<Tuple2<String, Tuple3<DataTypeBase, int, Uint8List>>> feedback =
+      List();
+  final List<Tuple2<DataTypeBase, Action>> reactions = List();
+  final List<Processor> dataProcessors = List();
+  final MetaWearBoardPrivate mwPrivate;
+  final Queue<RouteComponentImpl> stashedSignals = ListQueue();
+  final Queue<BranchElement> elements = ListQueue();
+  final Queue<Tuple2<RouteComponentImpl, List<DataTypeBase>>> splits =
+      ListQueue();
+  final Map<String, Processor> taggedProcessors = Map();
 
-    Cache(this.mwPrivate);
+  Cache(this.mwPrivate);
 }
 
 class AverageEditorInner extends EditorImplBase implements AverageEditor {
+  AverageEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-    AverageEditorInner(DataProcessorConfig configObj, DataTypeBase source,
-        MetaWearBoardPrivate mwPrivate) : super(configObj, source, mwPrivate);
+  @override
+  void modify(int samples) {
+    config[2] = samples;
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 
-
-    @override
-    void modify(int samples) {
-        config[2] = samples;
-        mwPrivate.sendCommandForModule(
-            ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,
-            source.eventConfig[2]);
-    }
-
-    @override
-    void reset() {
-        mwPrivate.sendCommand(Uint8List.fromList([
-            ModuleType.DATA_PROCESSOR.id,
-            DataProcessorImpl.STATE,
-            source.eventConfig[2]
-        ]));
-    }
+  @override
+  void reset() {
+    mwPrivate.sendCommand(Uint8List.fromList([
+      ModuleType.DATA_PROCESSOR.id,
+      DataProcessorImpl.STATE,
+      source.eventConfig[2]
+    ]));
+  }
 }
 
 class MapEditorInner extends EditorImplBase implements MapEditor {
-    MapEditorInner(DataProcessorConfig configObj, DataTypeBase source,
-        MetaWearBoardPrivate mwPrivate) : super(configObj, source, mwPrivate);
+  MapEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
+  @override
+  void modifyRhs(num rhs) {
+    num scaledRhs;
 
-    @override
-    void modifyRhs(num rhs) {
-        num scaledRhs;
-
-        switch (Operation.values[config[2] - 1]) {
-            case Operation.ADD:
-            case Operation.MODULUS:
-            case Operation.SUBTRACT:
-                scaledRhs = source.convertToFirmwareUnits(mwPrivate, rhs);
-                break;
-            case Operation.SQRT:
-            case Operation.ABS_VALUE:
-                scaledRhs = 0;
-                break;
-            default:
-                scaledRhs = rhs;
-        }
-
-        Uint8List newRhs = Uint8List(4);
-        ByteData byteData = ByteData.view(newRhs.buffer);
-        byteData.setInt32(0, scaledRhs.floor(), Endian.little);
-
-        config.setAll(3, newRhs);
-
-        mwPrivate.sendCommandForModule(
-            ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,
-            source.eventConfig[2]);
+    switch (Operation.values[config[2] - 1]) {
+      case Operation.ADD:
+      case Operation.MODULUS:
+      case Operation.SUBTRACT:
+        scaledRhs = source.convertToFirmwareUnits(mwPrivate, rhs);
+        break;
+      case Operation.SQRT:
+      case Operation.ABS_VALUE:
+        scaledRhs = 0;
+        break;
+      default:
+        scaledRhs = rhs;
     }
+
+    Uint8List newRhs = Uint8List(4);
+    ByteData byteData = ByteData.view(newRhs.buffer);
+    byteData.setInt32(0, scaledRhs.floor(), Endian.little);
+
+    config.setAll(3, newRhs);
+
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
 
 class PulseEditorInner extends EditorImplBase implements PulseEditor {
+  PulseEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-    PulseEditorInner(DataProcessorConfig configObj, DataTypeBase source, MetaWearBoardPrivate mwPrivate) : super(configObj, source, mwPrivate);
-
-    @override
-    void modify(num threshold, int samples) {
-        Uint8List payload = Uint8List(6);
-        ByteData byteData = ByteData.view(payload.buffer);
-        byteData.setInt32(0, source.convertToFirmwareUnits(mwPrivate, threshold).floor(),Endian.little);
-        byteData.setInt16(4, samples,Endian.little);
-        config.setAll(4, payload);
-        mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
-    }
+  @override
+  void modify(num threshold, int samples) {
+    Uint8List payload = Uint8List(6);
+    ByteData byteData = ByteData.view(payload.buffer);
+    byteData.setInt32(
+        0,
+        source.convertToFirmwareUnits(mwPrivate, threshold).floor(),
+        Endian.little);
+    byteData.setInt16(4, samples, Endian.little);
+    config.setAll(4, payload);
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
-
 
 class TimeEditorInner extends EditorImplBase implements TimeEditor {
-    TimeEditorInner(DataProcessorConfig configObj, DataTypeBase source, MetaWearBoardPrivate mwPrivate): super(configObj, source, mwPrivate);
+  TimeEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-
-    @override
-    void modify(int period) {
-        Uint8List payload = Uint8List(4);
-        ByteData.view(payload.buffer).setUint32(0, period,Endian.little);
-        config.setAll(2, payload);
-        mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,source.eventConfig[2]);
-    }
+  @override
+  void modify(int period) {
+    Uint8List payload = Uint8List(4);
+    ByteData.view(payload.buffer).setUint32(0, period, Endian.little);
+    config.setAll(2, payload);
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
 
+class PassthroughEditorInner extends EditorImplBase
+    implements PassthroughEditor {
+  PassthroughEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-class PassthroughEditorInner extends EditorImplBase implements PassthroughEditor {
-    PassthroughEditorInner(DataProcessorConfig configObj, DataTypeBase source, MetaWearBoardPrivate mwPrivate): super(configObj, source, mwPrivate);
+  @override
+  void set(int value) {
+    Uint8List payload = Uint8List(2);
+    ByteData.view(payload.buffer).setInt16(0, value, Endian.little);
 
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.STATE, payload, source.eventConfig[2]);
+  }
 
-    @override
-    void set(int value) {
-        Uint8List payload = Uint8List(2);
-        ByteData.view(payload.buffer).setInt16(0, value,Endian.little);
-
-        mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR, DataProcessorImpl.STATE, payload, source.eventConfig[2]);
-    }
-
-    @override
-    void modify(Passthrough type, int value) {
-        Uint8List payload= Uint8List(2);
-        ByteData.view(payload.buffer).setInt16(0, value);
-        config.setAll(2, payload);
-        config[1] = type.index & 0x7;
-        mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,source.eventConfig[2]);
-    }
+  @override
+  void modify(Passthrough type, int value) {
+    Uint8List payload = Uint8List(2);
+    ByteData.view(payload.buffer).setInt16(0, value);
+    config.setAll(2, payload);
+    config[1] = type.index & 0x7;
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
 
-class SingleValueComparatorEditor extends EditorImplBase implements ComparatorEditor {
+class SingleValueComparatorEditor extends EditorImplBase
+    implements ComparatorEditor {
+  SingleValueComparatorEditor(DataProcessorConfig configObj,
+      DataTypeBase source, MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-    SingleValueComparatorEditor(DataProcessorConfig configObj,
-        DataTypeBase source, MetaWearBoardPrivate mwPrivate)
-        : super(configObj, source, mwPrivate);
+  @override
+  void modify(Comparison op, List<num> references) {
+    Uint8List payload = Uint8List(6);
+    ByteData byteData = ByteData.view(payload.buffer);
+    byteData.setInt8(0, op.index);
+    byteData.setInt8(1, 0);
+    byteData.setInt32(
+        2, source.convertToFirmwareUnits(mwPrivate, references[0]).floor());
+    config.setAll(2, payload);
 
-
-    @override
-    void modify(Comparison op, List<num> references) {
-        Uint8List payload = Uint8List(6);
-        ByteData byteData = ByteData.view(payload.buffer);
-        byteData.setInt8(0, op.index);
-        byteData.setInt8(1, 0);
-        byteData.setInt32(
-            2, source.convertToFirmwareUnits(mwPrivate, references[0]).floor());
-        config.setAll(2, payload);
-
-        mwPrivate.sendCommandForModule(
-            ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,
-            source.eventConfig[2]);
-    }
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
 
-class MultiValueComparatorEditor extends EditorImplBase implements ComparatorEditor {
+class MultiValueComparatorEditor extends EditorImplBase
+    implements ComparatorEditor {
+  MultiValueComparatorEditor(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-
-    MultiValueComparatorEditor(DataProcessorConfig configObj,
-        DataTypeBase source, MetaWearBoardPrivate mwPrivate)
-        : super(configObj, source, mwPrivate);
-
-    static void fillReferences(DataTypeBase source,
-        MetaWearBoardPrivate mwPrivate, ByteData buffer, int length,
-        List<num> references) {
-        int index = 0;
-        switch (length) {
-            case 1:
-                for (num it in references) {
-                    buffer.setUint8(index,
-                        source.convertToFirmwareUnits(mwPrivate, it).floor());
-                    index++;
-                }
-                break;
-            case 2:
-                for (num it in references) {
-                    buffer.setInt16(index,
-                        source.convertToFirmwareUnits(mwPrivate, it).floor());
-                    index += 2;
-                }
-                break;
-            case 4:
-                for (num it in references) {
-                    buffer.setInt32(
-                        index, source.convertToFirmwareUnits(mwPrivate, it));
-                    index += 4;
-                }
-                break;
+  static void fillReferences(
+      DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate,
+      ByteData buffer,
+      int length,
+      List<num> references) {
+    int index = 0;
+    switch (length) {
+      case 1:
+        for (num it in references) {
+          buffer.setUint8(
+              index, source.convertToFirmwareUnits(mwPrivate, it).floor());
+          index++;
         }
+        break;
+      case 2:
+        for (num it in references) {
+          buffer.setInt16(
+              index, source.convertToFirmwareUnits(mwPrivate, it).floor());
+          index += 2;
+        }
+        break;
+      case 4:
+        for (num it in references) {
+          buffer.setInt32(index, source.convertToFirmwareUnits(mwPrivate, it));
+          index += 4;
+        }
+        break;
     }
+  }
 
+  @override
+  void modify(Comparison op, List<num> references) {
+    Uint8List payload =
+        Uint8List(references.length * source.attributes.length());
 
-    @override
-    void modify(Comparison op, List<num> references) {
-        Uint8List payload = Uint8List(
-            references.length * source.attributes.length());
+    fillReferences(source, mwPrivate, ByteData.view(payload.buffer),
+        source.attributes.length(), references);
 
-        fillReferences(source, mwPrivate, ByteData.view(payload.buffer),
-            source.attributes.length(), references);
+    Uint8List newConfig =
+        Uint8List(2 + references.length * source.attributes.length());
+    newConfig[0] = config[0];
+    newConfig[1] = ((config[1] & ~0x38) | (op.index << 3));
+    newConfig.setAll(2, payload);
+    config = newConfig;
 
-        Uint8List newConfig = Uint8List(
-            2 + references.length * source.attributes.length());
-        newConfig[0] = config[0];
-        newConfig[1] = ((config[1] & ~0x38) | (op.index << 3));
-        newConfig.setAll(2, payload);
-        config = newConfig;
-
-        mwPrivate.sendCommandForModule(
-            ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,
-            source.eventConfig[2]);
-    }
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
 
 class ThresholdEditorInner extends EditorImplBase implements ThresholdEditor {
-    ThresholdEditorInner(DataProcessorConfig configObj, DataTypeBase source, MetaWearBoardPrivate mwPrivate) : super(configObj, source, mwPrivate);
+  ThresholdEditorInner(DataProcessorConfig configObj, DataTypeBase source,
+      MetaWearBoardPrivate mwPrivate)
+      : super(configObj, source, mwPrivate);
 
-    @override
-    void modify(num threshold, num hysteresis) {
-        Uint8List payload = Uint8List(6);
-        ByteData byteData = ByteData.view(payload.buffer);
-        byteData.setInt32(0, source.convertToFirmwareUnits(mwPrivate, threshold).floor());
-        byteData.setInt16(4, source.convertToFirmwareUnits(mwPrivate, hysteresis).floor());
+  @override
+  void modify(num threshold, num hysteresis) {
+    Uint8List payload = Uint8List(6);
+    ByteData byteData = ByteData.view(payload.buffer);
+    byteData.setInt32(
+        0, source.convertToFirmwareUnits(mwPrivate, threshold).floor());
+    byteData.setInt16(
+        4, source.convertToFirmwareUnits(mwPrivate, hysteresis).floor());
 
-       config.setAll(2, payload);
+    config.setAll(2, payload);
 
-        mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR, DataProcessorImpl.PARAMETER, config,source.eventConfig[2]);
-    }
+    mwPrivate.sendCommandForModule(ModuleType.DATA_PROCESSOR,
+        DataProcessorImpl.PARAMETER, config, source.eventConfig[2]);
+  }
 }
 
 /**
@@ -415,12 +445,14 @@ class RouteComponentImpl implements RouteComponent {
       switch (persistantData.elements.removeLast()) {
         case BranchElement.MULTICAST:
           persistantData.stashedSignals.removeLast();
-          return persistantData.stashedSignals.isEmpty ? null : persistantData
-              .stashedSignals.last;
+          return persistantData.stashedSignals.isEmpty
+              ? null
+              : persistantData.stashedSignals.last;
         case BranchElement.SPLIT:
           persistantData.splits.last;
-          return persistantData.splits.isEmpty ? null : persistantData.splits
-              .last.item1;
+          return persistantData.splits.isEmpty
+              ? null
+              : persistantData.splits.last.item1;
         default:
           throw Exception("Only here so the compiler doesn't complain");
       }
@@ -454,8 +486,8 @@ class RouteComponentImpl implements RouteComponent {
   @override
   RouteComponent log(Subscriber subscriber) {
     if (source.attributes.length() > 0) {
-      persistantData.subscribedProducers.add(
-          new Tuple3(source, subscriber, true));
+      persistantData.subscribedProducers
+          .add(new Tuple3(source, subscriber, true));
       return this;
     }
     throw new IllegalRouteOperationException("Cannot log null data");
@@ -476,12 +508,12 @@ class RouteComponentImpl implements RouteComponent {
 
     DataProcessorConfig config = Buffer(source.attributes.length());
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
     return postCreate(next.item2,
         new NullEditor(config, next.item1, persistantData.mwPrivate));
   }
-
 
   RouteComponentImpl createReducer(bool counter) {
     if (!counter) {
@@ -495,15 +527,17 @@ class RouteComponentImpl implements RouteComponent {
     }
 
     final int output = 4;
-    DataProcessorConfig config = new Accumulator(
-        counter, output, source.attributes.length());
+    DataProcessorConfig config =
+        new Accumulator(counter, output, source.attributes.length());
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
-    EditorImplBase editor = counter ?
-    new CounterEditorInner(config, next.item1, persistantData.mwPrivate) :
-    new AccumulatorEditorInner(config, next.item1, persistantData.mwPrivate);
+    EditorImplBase editor = counter
+        ? new CounterEditorInner(config, next.item1, persistantData.mwPrivate)
+        : new AccumulatorEditorInner(
+            config, next.item1, persistantData.mwPrivate);
 
     return postCreate(next.item2, editor);
   }
@@ -520,8 +554,9 @@ class RouteComponentImpl implements RouteComponent {
 
   RouteComponent applyAverager(int nSamples, bool hpf, String name) {
     bool hasHpf = persistantData.mwPrivate
-        .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
-        .revision >= DataProcessorImpl.HPF_REVISION;
+            .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
+            .revision >=
+        DataProcessorImpl.HPF_REVISION;
     if (source.attributes.length() <= 0) {
       throw new IllegalRouteOperationException(
           sprintf("Cannot apply %s filter to null data", name));
@@ -535,11 +570,12 @@ class RouteComponentImpl implements RouteComponent {
           sprintf("Cannot apply  %s filter to sensor fusion data", name));
     }
 
-    DataProcessorConfig config = new Average(
-        source.attributes, nSamples, hpf, hasHpf);
+    DataProcessorConfig config =
+        new Average(source.attributes, nSamples, hpf, hasHpf);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
     return postCreate(next.item2,
         new AverageEditorInner(config, next.item1, persistantData.mwPrivate));
@@ -548,8 +584,9 @@ class RouteComponentImpl implements RouteComponent {
   @override
   RouteComponent highpass(int nSamples) {
     if (persistantData.mwPrivate
-        .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
-        .revision < DataProcessorImpl.HPF_REVISION) {
+            .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
+            .revision <
+        DataProcessorImpl.HPF_REVISION) {
       throw new IllegalRouteOperationException(
           "High pass filtering not supported on this firmware version");
     }
@@ -573,8 +610,9 @@ class RouteComponentImpl implements RouteComponent {
     }
 
     bool expanded = persistantData.mwPrivate
-        .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
-        .revision >= DataProcessorImpl.EXPANDED_DELAY;
+            .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
+            .revision >=
+        DataProcessorImpl.EXPANDED_DELAY;
     int maxLength = expanded ? 16 : 4;
     if (source.attributes.length() > maxLength) {
       throw new IllegalRouteOperationException(sprintf(
@@ -582,11 +620,12 @@ class RouteComponentImpl implements RouteComponent {
           maxLength));
     }
 
-    DataProcessorConfig config = new Delay(
-        expanded, source.attributes.length(), samples);
+    DataProcessorConfig config =
+        new Delay(expanded, source.attributes.length(), samples);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
     return postCreate(next.item2,
         new NullEditor(config, next.item1, persistantData.mwPrivate));
@@ -604,8 +643,9 @@ class RouteComponentImpl implements RouteComponent {
     // assume sizes array is filled with the same value
     DataProcessorConfig config = new Combiner(source.attributes, rss);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
     return postCreate(next.item2,
         new NullEditor(config, next.item1, persistantData.mwPrivate));
   }
@@ -629,8 +669,7 @@ class RouteComponentImpl implements RouteComponent {
         case Function1.SQRT:
           return applyMath(Operation.SQRT, 0);
       }
-    }
-    else if (fn.handler is Function2) {
+    } else if (fn.handler is Function2) {
       RouteComponent route = null;
       if (fn.target is num || fn.target is List<String>)
         throw Exception("target has to be either a List<String> or num");
@@ -668,8 +707,9 @@ class RouteComponentImpl implements RouteComponent {
       if (fn.target is List<String>) {
         for (String key in fn.target as List<String>) {
           persistantData.feedback.add(Tuple2(
-              key, Tuple3((route as RouteComponentImpl).source, 4,
-              persistantData.dataProcessors.last.editor.config)));
+              key,
+              Tuple3((route as RouteComponentImpl).source, 4,
+                  persistantData.dataProcessors.last.editor.config)));
         }
       }
       return route;
@@ -677,8 +717,10 @@ class RouteComponentImpl implements RouteComponent {
   }
 
   RouteComponent applyMath(Operation op, num rhs) {
-    bool multiChnlMath = persistantData.mwPrivate.getFirmwareVersion()
-        .compareTo(MULTI_CHANNEL_MATH) >= 0;
+    bool multiChnlMath = persistantData.mwPrivate
+            .getFirmwareVersion()
+            .compareTo(MULTI_CHANNEL_MATH) >=
+        0;
 
     if (!multiChnlMath && source.attributes.length() > 4) {
       throw new IllegalRouteOperationException(
@@ -712,11 +754,12 @@ class RouteComponentImpl implements RouteComponent {
         scaledRhs = rhs;
     }
 
-    Maths config = Maths(
-        source.attributes, multiChnlMath, op, scaledRhs.floor());
+    Maths config =
+        Maths(source.attributes, multiChnlMath, op, scaledRhs.floor());
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
     config.output = next.item1.attributes.sizes[0];
     return postCreate(next.item2,
         new MapEditorInner(config, next.item1, persistantData.mwPrivate));
@@ -730,8 +773,9 @@ class RouteComponentImpl implements RouteComponent {
     }
 
     bool hasTimePassthrough = persistantData.mwPrivate
-        .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
-        .revision >= DataProcessorImpl.TIME_PASSTHROUGH_REVISION;
+            .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
+            .revision >=
+        DataProcessorImpl.TIME_PASSTHROUGH_REVISION;
     if (!hasTimePassthrough &&
         source.eventConfig[0] == ModuleType.SENSOR_FUSION.id) {
       throw new IllegalRouteOperationException(
@@ -741,8 +785,9 @@ class RouteComponentImpl implements RouteComponent {
     DataProcessorConfig config = new Time(
         source.attributes.length(), (hasTimePassthrough ? 2 : 0), period);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
     return postCreate(next.item2,
         new TimeEditorInner(config, next.item1, persistantData.mwPrivate));
@@ -757,12 +802,14 @@ class RouteComponentImpl implements RouteComponent {
     DataProcessorConfig config = PassthroughConfig(type, value);
 
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
-    return postCreate(next.item2, new PassthroughEditorInner(
-        config, next.item1, persistantData.mwPrivate));
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
+    return postCreate(
+        next.item2,
+        new PassthroughEditorInner(
+            config, next.item1, persistantData.mwPrivate));
   }
-
 
   @override
   RouteComponent find(PulseOutput output, num threshold, int samples) {
@@ -781,13 +828,17 @@ class RouteComponentImpl implements RouteComponent {
           "Cannot find pulses for sensor fusion data");
     }
 
-    DataProcessorConfig config = new Pulse(source.attributes.length(),
-        source.convertToFirmwareUnits(persistantData.mwPrivate, threshold)
-            .floor(), samples, output);
+    DataProcessorConfig config = new Pulse(
+        source.attributes.length(),
+        source
+            .convertToFirmwareUnits(persistantData.mwPrivate, threshold)
+            .floor(),
+        samples,
+        output);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
         config,
-        persistantData.mwPrivate
-            .getModules()[DataProcessor] as DataProcessorImpl);
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
     return postCreate(next.item2,
         new PulseEditorInner(config, next.item1, persistantData.mwPrivate));
@@ -813,23 +864,28 @@ class RouteComponentImpl implements RouteComponent {
       }
 
       num firmwareValue = source.convertToFirmwareUnits(
-          persistantData.mwPrivate, item.threshold),
+              persistantData.mwPrivate, item.threshold),
           firmwareHysteresis = source.convertToFirmwareUnits(
               persistantData.mwPrivate, item.hysteresis);
 
       DataProcessorConfig config = new Threshold(
-          source.attributes.length(), source.attributes.signed, item.output,
-          firmwareValue.floor(), firmwareHysteresis.floor());
+          source.attributes.length(),
+          source.attributes.signed,
+          item.output,
+          firmwareValue.floor(),
+          firmwareHysteresis.floor());
       Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-          config, persistantData.mwPrivate
-          .getModules()[DataProcessor] as DataProcessorImpl);
-      return postCreate(next.item2, new ThresholdEditorInner(
-          config, next.item1, persistantData.mwPrivate));
-    }
-    else if (filter is ComparisonFilter) {
+          config,
+          persistantData.mwPrivate.getModules()[DataProcessor]
+              as DataProcessorImpl);
+      return postCreate(
+          next.item2,
+          new ThresholdEditorInner(
+              config, next.item1, persistantData.mwPrivate));
+    } else if (filter is ComparisonFilter) {
       ComparisonFilter item = filter as ComparisonFilter;
-      List<num> references = item.target is List<num> ? item
-          .target as List<num> : [0];
+      List<num> references =
+          item.target is List<num> ? item.target as List<num> : [0];
       RouteComponent routeComponent = null;
 
       if (source.attributes.length() > 4) {
@@ -838,8 +894,7 @@ class RouteComponentImpl implements RouteComponent {
       }
 
       if (source.attributes.length() <= 0) {
-        throw new IllegalRouteOperationException(
-            "Cannot compare null data");
+        throw new IllegalRouteOperationException("Cannot compare null data");
       }
 
       if (source.eventConfig[0] == ModuleType.SENSOR_FUSION.id) {
@@ -847,23 +902,25 @@ class RouteComponentImpl implements RouteComponent {
             "Cannot compare sensor sensor fusion data");
       }
 
-      if (persistantData.mwPrivate.getFirmwareVersion().compareTo(
-          MULTI_COMPARISON_MIN_FIRMWARE) < 0) {
-        bool signed = source.attributes.signed ||
-            references[0].toDouble() < 0;
+      if (persistantData.mwPrivate
+              .getFirmwareVersion()
+              .compareTo(MULTI_COMPARISON_MIN_FIRMWARE) <
+          0) {
+        bool signed = source.attributes.signed || references[0].toDouble() < 0;
         final num scaledReference = source.convertToFirmwareUnits(
             persistantData.mwPrivate, references[0]);
 
-        DataProcessorConfig config = new SingleValueComparison(
-            signed, item.op, scaledReference.floor());
-        Tuple2<DataTypeBase, DataTypeBase> next = source
-            .dataProcessorTransform(config, persistantData.mwPrivate
-            .getModules()[DataProcessor] as DataProcessorImpl);
-        routeComponent = postCreate(next.item2,
+        DataProcessorConfig config =
+            new SingleValueComparison(signed, item.op, scaledReference.floor());
+        Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
+            config,
+            persistantData.mwPrivate.getModules()[DataProcessor]
+                as DataProcessorImpl);
+        routeComponent = postCreate(
+            next.item2,
             new SingleValueComparatorEditor(
                 config, next.item1, persistantData.mwPrivate));
-      }
-      else {
+      } else {
         bool anySigned = false;
         List<num> scaled = List<num>(references.length);
         for (int i = 0; i < references.length; i++) {
@@ -873,14 +930,15 @@ class RouteComponentImpl implements RouteComponent {
         }
         bool signed = source.attributes.signed || anySigned;
 
-        DataProcessorConfig config = MultiValueComparison(
-            signed, source.attributes.length(), item.op,
-            item.comparisonOutput, scaled);
-        Tuple2<DataTypeBase, DataTypeBase> next = source
-            .dataProcessorTransform(config, persistantData.mwPrivate
-            .getModules()[DataProcessor] as DataProcessorImpl);
+        DataProcessorConfig config = MultiValueComparison(signed,
+            source.attributes.length(), item.op, item.comparisonOutput, scaled);
+        Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
+            config,
+            persistantData.mwPrivate.getModules()[DataProcessor]
+                as DataProcessorImpl);
 
-        routeComponent = postCreate(next.item2,
+        routeComponent = postCreate(
+            next.item2,
             new MultiValueComparatorEditor(
                 config, next.item1, persistantData.mwPrivate));
       }
@@ -890,18 +948,17 @@ class RouteComponentImpl implements RouteComponent {
               key,
               Tuple3(
                   (routeComponent as RouteComponentImpl).source,
-                  persistantData.mwPrivate.getFirmwareVersion()
-                      .compareTo(MULTI_COMPARISON_MIN_FIRMWARE) < 0
+                  persistantData.mwPrivate
+                              .getFirmwareVersion()
+                              .compareTo(MULTI_COMPARISON_MIN_FIRMWARE) <
+                          0
                       ? 5
                       : 3,
-                  persistantData.dataProcessors.last.editor.config
-              )
-          ));
+                  persistantData.dataProcessors.last.editor.config)));
         }
       }
       return routeComponent;
-    }
-    else if (filter is DifferentialFilter) {
+    } else if (filter is DifferentialFilter) {
       DifferentialFilter item = filter as DifferentialFilter;
 
       if (source.attributes.length() > 4) {
@@ -921,16 +978,18 @@ class RouteComponentImpl implements RouteComponent {
 
       num firmwareUnits = source.convertToFirmwareUnits(
           persistantData.mwPrivate, item.distance);
-      DataProcessorConfig config = new Differential(
-          source.attributes.length(), source.attributes.signed, item.op,
-          firmwareUnits.floor());
+      DataProcessorConfig config = new Differential(source.attributes.length(),
+          source.attributes.signed, item.op, firmwareUnits.floor());
 
       Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-          config, persistantData.mwPrivate
-          .getModules()[DataProcessor] as DataProcessorImpl);
+          config,
+          persistantData.mwPrivate.getModules()[DataProcessor]
+              as DataProcessorImpl);
 
-      return postCreate(next.item2, new DifferentialEditorInner(
-          config, next.item1, persistantData.mwPrivate));
+      return postCreate(
+          next.item2,
+          new DifferentialEditorInner(
+              config, next.item1, persistantData.mwPrivate));
     }
     throw Exception("Unknown Filter");
   }
@@ -943,41 +1002,46 @@ class RouteComponentImpl implements RouteComponent {
   @override
   RouteComponent pack(int count) {
     if (persistantData.mwPrivate
-        .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
-        .revision < DataProcessorImpl.ENHANCED_STREAMING_REVISION) {
+            .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
+            .revision <
+        DataProcessorImpl.ENHANCED_STREAMING_REVISION) {
       throw new IllegalRouteOperationException(
           "Current firmware does not support data packing");
     }
 
     if (source.attributes.length() * count + 3 > ModuleType.MAX_BTLE_LENGTH) {
       throw new IllegalRouteOperationException(
-          "Not enough space in the ble packet to pack " + count.toString() +
+          "Not enough space in the ble packet to pack " +
+              count.toString() +
               " data samples");
     }
 
     DataProcessorConfig config = new Packer(source.attributes.length(), count);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
     return postCreate(next.item2,
         new PackerEditorInner(config, next.item1, persistantData.mwPrivate));
   }
 
-
   @override
   RouteComponent account([AccountType type = AccountType.TIME]) {
     if (persistantData.mwPrivate
-        .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
-        .revision < DataProcessorImpl.ENHANCED_STREAMING_REVISION) {
+            .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
+            .revision <
+        DataProcessorImpl.ENHANCED_STREAMING_REVISION) {
       throw new IllegalRouteOperationException(
           "Current firmware does not support data accounting");
     }
 
-    final int size = (type == AccountType.TIME ? 4 : min(
-        4, ModuleType.MAX_BTLE_LENGTH - 3 - source.attributes.length()));
+    final int size = (type == AccountType.TIME
+        ? 4
+        : min(4, ModuleType.MAX_BTLE_LENGTH - 3 - source.attributes.length()));
     if (type == AccountType.TIME &&
-        source.attributes.length() + size + 3 > ModuleType.MAX_BTLE_LENGTH ||
+            source.attributes.length() + size + 3 >
+                ModuleType.MAX_BTLE_LENGTH ||
         type == AccountType.COUNT && size < 0) {
       throw new IllegalRouteOperationException(
           "Not enough space left in the ble packet to add accounter information");
@@ -985,8 +1049,9 @@ class RouteComponentImpl implements RouteComponent {
 
     DataProcessorConfig config = Accounter(size, type);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
-        config, persistantData.mwPrivate
-        .getModules()[DataProcessor] as DataProcessorImpl);
+        config,
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
     return postCreate(next.item2,
         new NullEditor(config, next.item1, persistantData.mwPrivate));
@@ -995,8 +1060,9 @@ class RouteComponentImpl implements RouteComponent {
   @override
   RouteComponent fuse(List<String> bufferNames) {
     if (persistantData.mwPrivate
-        .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
-        .revision < DataProcessorImpl.FUSE_REVISION) {
+            .lookupModuleInfo(ModuleType.DATA_PROCESSOR)
+            .revision <
+        DataProcessorImpl.FUSE_REVISION) {
       throw new IllegalRouteOperationException(
           "Current firmware does not support data fusing");
     }
@@ -1004,11 +1070,10 @@ class RouteComponentImpl implements RouteComponent {
     DataProcessorConfig config = Fuser(bufferNames);
     Tuple2<DataTypeBase, DataTypeBase> next = source.dataProcessorTransform(
         config,
-        persistantData.mwPrivate
-            .getModules()[DataProcessor] as DataProcessorImpl);
+        persistantData.mwPrivate.getModules()[DataProcessor]
+            as DataProcessorImpl);
 
     return postCreate(next.item2,
         new NullEditor(config, next.item1, persistantData.mwPrivate));
   }
 }
-

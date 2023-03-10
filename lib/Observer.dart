@@ -22,21 +22,14 @@
  * hello@mbientlab.com.
  */
 
+/// Monitors an on-board event and executes the corresponding {@link CodeBlock} when its event is fired
 
-/**
- * Monitors an on-board event and executes the corresponding {@link CodeBlock} when its event is fired
- * @author Eric Tsai
- */
 abstract class Observer {
-    /**
-     * Unique value identifying the observer.  Used with {@link MetaWearBoard#lookupObserver(int)}
-     * to retrieve an existing observer
-     * @return Numerical ID identifying the route
-     */
-    int id();
-    /**
-     * Removes the observer and its accompanying {@link CodeBlock} from the board
-     */
-    void remove();
-}
+  /// Unique value identifying the observer.  Used with {@link MetaWearBoard#lookupObserver(int)}
+  /// to retrieve an existing observer
+  /// @return Numerical ID identifying the route
+  int id();
 
+  /// Removes the observer and its accompanying {@link CodeBlock} from the board
+  void remove();
+}

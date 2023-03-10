@@ -24,31 +24,22 @@
 
 import 'package:flutter_metawear/MetaWearBoard.dart';
 
-/**
- * Firmware feature that saves MetaWear commands to the on-board flash memory
- * @author Eric Tsai
- */
+/// Firmware feature that saves MetaWear commands to the on-board flash memory
+
 abstract class Macro extends Module {
-    /**
-     * Variant of {@link #startRecord(boolean)} with {@code execOnBoot} set to true
-     */
-    void startRecord([bool execOnBoot]);
+  /// Variant of {@link #startRecord(boolean)} with {@code execOnBoot} set to true
+  void startRecord([bool execOnBoot]);
 
-    /**
-     * Ends macro recording
-     * @return Task containing the id of the recorded task
-     */
-    Future<int> endRecordAsync();
+  /// Ends macro recording
+  /// @return Task containing the id of the recorded task
+  Future<int> endRecordAsync();
 
-    /**
-     * Execute the commands corresponding to the macro ID
-     * @param id        Numerical ID of the macro to execute
-     */
-    void execute(int id);
-    /**
-     * Remove all macros on the flash memory.  The erase operation will not be performed until
-     * you disconnect from the board.  If you wish to reset the board after the erase operation,
-     * use the {@link Debug#resetAfterGc()} method.
-     */
-    void eraseAll();
+  /// Execute the commands corresponding to the macro ID
+  /// @param id        Numerical ID of the macro to execute
+  void execute(int id);
+
+  /// Remove all macros on the flash memory.  The erase operation will not be performed until
+  /// you disconnect from the board.  If you wish to reset the board after the erase operation,
+  /// use the {@link Debug#resetAfterGc()} method.
+  void eraseAll();
 }

@@ -31,7 +31,7 @@ import 'package:flutter_metawear/module/Switch.dart';
 import 'package:flutter_metawear/module/Led.dart';
 import 'package:flutter_metawear/module/BarometerBme280.dart';
 import 'package:flutter_metawear/module/BarometerBme280.dart';
-import 'package:flutter_metawear/module/AccelerometerBmi160.dart';
+import 'package:flutter_metawear/module/accelerometer_bmi160.dart';
 import 'package:flutter_metawear/module/GyroBmi160.dart';
 import 'package:flutter_metawear/module/Gpio.dart';
 import 'package:flutter_metawear/module/Temperature.dart';

@@ -24,24 +24,21 @@
 
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 
-/**
- * Created by etsai on 9/20/16.
- */
-abstract class ModuleImplBase{
+abstract class ModuleImplBase {
 //    private static final long serialVersionUID = -8904360854647238719L;
-    MetaWearBoardPrivate mwPrivate;
+  MetaWearBoardPrivate mwPrivate;
 
-    ModuleImplBase(MetaWearBoardPrivate mwPrivate) {
-        this.mwPrivate= mwPrivate;
-        init();
-    }
+  ModuleImplBase(MetaWearBoardPrivate mwPrivate) {
+    this.mwPrivate = mwPrivate;
+    init();
+  }
 
-    void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
-        this.mwPrivate= mwPrivate;
-        init();
-    }
+  void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
+    this.mwPrivate = mwPrivate;
+    init();
+  }
 
-    void init() { }
-    void tearDown() { }
-    void disconnected() { }
+  void init() {}
+  void tearDown() {}
+  void disconnected() {}
 }

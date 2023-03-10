@@ -29,10 +29,10 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:flutter_metawear/impl/platform/BtleGatt.dart';
-import 'package:flutter_metawear/impl/platform/IO.dart';
-import 'package:flutter_metawear/impl/platform/BtleGattCharacteristic.dart';
-import 'package:flutter_metawear/impl/platform/DeviceInformationService.dart';
+import 'package:flutter_metawear/impl/platform/btle_gatt.dart';
+import 'package:flutter_metawear/impl/platform/io.dart';
+import 'package:flutter_metawear/impl/platform/btle_gatt_characteristic.dart';
+import 'package:flutter_metawear/impl/platform/device_information_service.dart';
 
 abstract class MwBridge {
  void disconnected();

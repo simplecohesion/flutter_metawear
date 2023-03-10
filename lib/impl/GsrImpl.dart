@@ -22,10 +22,8 @@
  * hello@mbientlab.com.
  */
 
-
-
 import 'package:flutter_metawear/Route.dart';
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleImplBase.dart';
@@ -38,98 +36,99 @@ import 'dart:typed_data';
 import 'package:sprintf/sprintf.dart';
 
 class Channel implements ForcedDataProducer {
-    final int id;
-    MetaWearBoardPrivate mwPrivate;
+  final int id;
+  MetaWearBoardPrivate mwPrivate;
 
-    Channel(this.id, this.mwPrivate) {
-        mwPrivate.tagProducer(name(), new UintData(
-            ModuleType.GSR, Util.setSilentRead(GsrImpl.CONDUCTANCE),
-            new DataAttributes(Uint8List.fromList([4]), 1, 0, false), id: id));
-    }
+  Channel(this.id, this.mwPrivate) {
+    mwPrivate.tagProducer(
+        name(),
+        new UintData(ModuleType.GSR, Util.setSilentRead(GsrImpl.CONDUCTANCE),
+            new DataAttributes(Uint8List.fromList([4]), 1, 0, false),
+            id: id));
+  }
 
-    void restoreTransientVariables(MetaWearBoardPrivate mwPrivate) {
-        this.mwPrivate = mwPrivate;
-    }
+  void restoreTransientVariables(MetaWearBoardPrivate mwPrivate) {
+    this.mwPrivate = mwPrivate;
+  }
 
-    @override
-    void read() {
-        mwPrivate.lookupProducer(name()).read(mwPrivate);
-    }
+  @override
+  void read() {
+    mwPrivate.lookupProducer(name()).read(mwPrivate);
+  }
 
-    @override
-    String name() {
-        return sprintf(GsrImpl.CONDUCTANCE_PRODUCER_FORMAT, id);
-    }
+  @override
+  String name() {
+    return sprintf(GsrImpl.CONDUCTANCE_PRODUCER_FORMAT, id);
+  }
 
-    @override
-    Future<Route> addRouteAsync(RouteBuilder builder) {
-        return mwPrivate.queueRouteBuilder(builder, name());
-    }
+  @override
+  Future<Route> addRouteAsync(RouteBuilder builder) {
+    return mwPrivate.queueRouteBuilder(builder, name());
+  }
 }
 
 class _ConfigEditor extends ConfigEditor {
-    ConstantVoltage _newCv = ConstantVoltage.CV_500MV;
-    Gain _newGain = Gain.GSR_499K;
+  ConstantVoltage _newCv = ConstantVoltage.CV_500MV;
+  Gain _newGain = Gain.GSR_499K;
 
-    final MetaWearBoardPrivate _mwPrivate;
+  final MetaWearBoardPrivate _mwPrivate;
 
-    _ConfigEditor(this._mwPrivate);
+  _ConfigEditor(this._mwPrivate);
 
-    @override
-    void commit() {
-        _mwPrivate.sendCommandForModule(ModuleType.GSR, GsrImpl.CONFIG,
-            Uint8List.fromList([_newCv.index, _newGain.index]));
-    }
+  @override
+  void commit() {
+    _mwPrivate.sendCommandForModule(ModuleType.GSR, GsrImpl.CONFIG,
+        Uint8List.fromList([_newCv.index, _newGain.index]));
+  }
 
-    @override
-    ConfigEditor constantVoltage(ConstantVoltage cv) {
-        _newCv = cv;
-        return this;
-    }
+  @override
+  ConfigEditor constantVoltage(ConstantVoltage cv) {
+    _newCv = cv;
+    return this;
+  }
 
-    @override
-    ConfigEditor gain(Gain gain) {
-        _newGain = gain;
-        return this;
-    }
+  @override
+  ConfigEditor gain(Gain gain) {
+    _newGain = gain;
+    return this;
+  }
 }
 
 class GsrImpl extends ModuleImplBase implements Gsr {
-    static const String CONDUCTANCE_PRODUCER_FORMAT= "com.mbientlab.metawear.impl.GsrImpl.CONDUCTANCE_PRODUCER_%d";
-    static const  int CONDUCTANCE = 0x1, CALIBRATE = 0x2, CONFIG= 0x3;
-    List<Channel> conductanceChannels;
+  static const String CONDUCTANCE_PRODUCER_FORMAT =
+      "com.mbientlab.metawear.impl.GsrImpl.CONDUCTANCE_PRODUCER_%d";
+  static const int CONDUCTANCE = 0x1, CALIBRATE = 0x2, CONFIG = 0x3;
+  List<Channel> conductanceChannels;
 
-    GsrImpl(MetaWearBoardPrivate mwPrivate): super(mwPrivate) {
-        Uint8List extra = mwPrivate
-            .lookupModuleInfo(ModuleType.GSR)
-            .extra;
-        conductanceChannels = List<Channel>(extra[0]);
-        for (int i = 0; i < extra[0]; i++) {
-            conductanceChannels[i] = new Channel(i, mwPrivate);
-        }
+  GsrImpl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate) {
+    Uint8List extra = mwPrivate.lookupModuleInfo(ModuleType.GSR).extra;
+    conductanceChannels = List<Channel>(extra[0]);
+    for (int i = 0; i < extra[0]; i++) {
+      conductanceChannels[i] = new Channel(i, mwPrivate);
     }
+  }
 
-    @override
-    void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
-        super.restoreTransientVars(mwPrivate);
+  @override
+  void restoreTransientVars(MetaWearBoardPrivate mwPrivate) {
+    super.restoreTransientVars(mwPrivate);
 
-        for(Channel it in conductanceChannels) {
-            it.restoreTransientVariables(mwPrivate);
-        }
+    for (Channel it in conductanceChannels) {
+      it.restoreTransientVariables(mwPrivate);
     }
+  }
 
-    @override
-    ConfigEditor configure() {
-        return _ConfigEditor(mwPrivate);
-    }
+  @override
+  ConfigEditor configure() {
+    return _ConfigEditor(mwPrivate);
+  }
 
-    @override
-    List<Channel> channels() {
-        return conductanceChannels;
-    }
+  @override
+  List<Channel> channels() {
+    return conductanceChannels;
+  }
 
-    @override
-    void calibrate() {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.GSR.id, CALIBRATE]));
-    }
+  @override
+  void calibrate() {
+    mwPrivate.sendCommand(Uint8List.fromList([ModuleType.GSR.id, CALIBRATE]));
+  }
 }

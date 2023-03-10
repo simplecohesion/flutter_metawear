@@ -24,7 +24,7 @@
 
 import 'package:flutter_metawear/AsyncDataProducer.dart';
 import 'package:flutter_metawear/Data.dart';
-import 'package:flutter_metawear/data/MagneticField.dart';
+import 'package:flutter_metawear/data/magnetic_field.dart';
 import 'package:flutter_metawear/impl/DataPrivate.dart';
 import 'package:flutter_metawear/impl/FloatVectorData.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';

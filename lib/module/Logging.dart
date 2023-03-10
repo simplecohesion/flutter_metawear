@@ -22,7 +22,6 @@
  * hello@mbientlab.com.
  */
 
-
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/MetaWearBoard.dart';
@@ -39,15 +38,9 @@ import 'package:flutter_metawear/MetaWearBoard.dart';
 //void receivedUpdate(int nEntriesLeft, int totalEntries);
 //}
 
+/// Types of errors encountered during a log download
 
-/**
- * Types of errors encountered during a log download
- * @author Eric Tsai
- */
-enum DownloadError {
-    UNKNOWN_LOG_ENTRY,
-    UNHANDLED_LOG_DATA
-}
+enum DownloadError { UNKNOWN_LOG_ENTRY, UNHANDLED_LOG_DATA }
 
 ///**
 // * Handler for processing download errors
@@ -63,37 +56,31 @@ enum DownloadError {
 //void receivedError(DownloadError errorType, int logId, DateTime timestamp, Uint8List data);
 //}
 
-class UpdateHandler{
-    final Function(int,int) nEntriesLeft;
-    final int nUpdates;
+class UpdateHandler {
+  final Function(int, int) nEntriesLeft;
+  final int nUpdates;
 
-    UpdateHandler(this.nEntriesLeft,this.nUpdates);
+  UpdateHandler(this.nEntriesLeft, this.nUpdates);
 }
 
-/**
- * Firmware feature that saves data to the on-board flash memory
- * @author Eric Tsai
- */
+/// Firmware feature that saves data to the on-board flash memory
+
 abstract class Logging extends Module {
+  /// Start logging sensor data
+  /// @param overwrite    True if older entries should be overwritten when the logger is full
+  void start(bool overwrite);
 
+  /// Stop logging sensor data
+  void stop();
 
-    /**
-     * Start logging sensor data
-     * @param overwrite    True if older entries should be overwritten when the logger is full
-     */
-    void start(bool overwrite);
-    /**
-     * Stop logging sensor data
-     */
-    void stop();
-    /**
-     * Download saved data from the flash memory with periodic progress updates and error handling
-     * @param nUpdates          How many progress updates to send to {@link LogDownloadUpdateHandler#receivedUpdate(long, long)}
-     * @param updateHandler     Handler to accept download notifications
-     * @param errorHandler      Handler to process errors encountered during the download
-     * @return Task that will complete when the download has finished
-     */
-    Future<void> downloadAsync({UpdateHandler updateHandler, Function(DownloadError, int, DateTime, Uint8List) errorHandler});
+  /// Download saved data from the flash memory with periodic progress updates and error handling
+  /// @param nUpdates          How many progress updates to send to {@link LogDownloadUpdateHandler#receivedUpdate(long, long)}
+  /// @param updateHandler     Handler to accept download notifications
+  /// @param errorHandler      Handler to process errors encountered during the download
+  /// @return Task that will complete when the download has finished
+  Future<void> downloadAsync(
+      {UpdateHandler updateHandler,
+      Function(DownloadError, int, DateTime, Uint8List) errorHandler});
 //    /**
 //     * Download saved data from the flash memory with periodic progress updates
 //     * @param nUpdates          How many progress updates to send to {@link LogDownloadUpdateHandler#receivedUpdate(long, long)}
@@ -113,9 +100,7 @@ abstract class Logging extends Module {
 //     */
 //    Future<void> downloadAsync();
 
-    /**
-     * Clear all stored logged data from the board.  The erase operation will not be performed until
-     * you disconnect from the board.
-     */
-    void clearEntries();
+  /// Clear all stored logged data from the board.  The erase operation will not be performed until
+  /// you disconnect from the board.
+  void clearEntries();
 }

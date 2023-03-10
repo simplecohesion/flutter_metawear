@@ -22,11 +22,10 @@
  * hello@mbientlab.com.
  */
 
-
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/Route.dart';
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/FloatVectorData.dart';
@@ -36,27 +35,26 @@ import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/module/GyroBmi160.dart';
 
 class BoschGyrCartesianFloatData extends FloatVectorData {
+  BoschGyrCartesianFloatData(
+      ModuleType module, int register, DataAttributes attributes,
+      {int id, DataTypeBase input})
+      : super(module, register, attributes, id: id, input: input);
 
-    BoschGyrCartesianFloatData(ModuleType module, int register,
-        DataAttributes attributes, {int id, DataTypeBase input})
-        : super(module, register, attributes, id: id, input: input);
+  factory BoschGyrCartesianFloatData.Default() {
+    return BoschGyrCartesianFloatData.Register(GyroBmi160Impl.DATA, 1);
+  }
 
+  factory BoschGyrCartesianFloatData.Register(int register, int copies) {
+    return BoschGyrCartesianFloatData(ModuleType.GYRO, register,
+        new DataAttributes(Uint8List.fromList([2, 2, 2]), copies, 0, true));
+  }
 
-    factory BoschGyrCartesianFloatData.Default(){
-        return BoschGyrCartesianFloatData.Register(GyroBmi160Impl.DATA, 1);
-    }
-
-    factory BoschGyrCartesianFloatData.Register(int register, int copies){
-        return BoschGyrCartesianFloatData(ModuleType.GYRO, register,
-            new DataAttributes(Uint8List.fromList([2, 2, 2]), copies, 0, true));
-    }
-
-    @override
-    DataTypeBase copy(DataTypeBase input, ModuleType module, int register,
-        int id, DataAttributes attributes) {
-        return BoschGyrCartesianFloatData(
-            module, register, attributes, id: id, input: input);
-    }
+  @override
+  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
+      DataAttributes attributes) {
+    return BoschGyrCartesianFloatData(module, register, attributes,
+        id: id, input: input);
+  }
 
 //    @override
 //    List<DataTypeBase> createSplits() {
@@ -98,50 +96,49 @@ class BoschGyrCartesianFloatData extends FloatVectorData {
 //    };
 //    }
 }
- class _AngularVelocityDataProducer extends AngularVelocityDataProducer {
-     final MetaWearBoardPrivate _mwPrivate;
 
-     _AngularVelocityDataProducer(this._mwPrivate);
+class _AngularVelocityDataProducer extends AngularVelocityDataProducer {
+  final MetaWearBoardPrivate _mwPrivate;
 
-     @override
-     String xAxisName() {
-         return GyroBmi160Impl.ROT_X_AXIS_PRODUCER;
-     }
+  _AngularVelocityDataProducer(this._mwPrivate);
 
-     @override
-     String yAxisName() {
-         return GyroBmi160Impl.ROT_Y_AXIS_PRODUCER;
-     }
+  @override
+  String xAxisName() {
+    return GyroBmi160Impl.ROT_X_AXIS_PRODUCER;
+  }
 
-     @override
-     String zAxisName() {
-         return GyroBmi160Impl.ROT_Z_AXIS_PRODUCER;
-     }
+  @override
+  String yAxisName() {
+    return GyroBmi160Impl.ROT_Y_AXIS_PRODUCER;
+  }
 
-     @override
-     Future<Route> addRouteAsync(RouteBuilder builder) {
-         return _mwPrivate.queueRouteBuilder(
-             builder, GyroBmi160Impl.ROT_PRODUCER);
-     }
+  @override
+  String zAxisName() {
+    return GyroBmi160Impl.ROT_Z_AXIS_PRODUCER;
+  }
 
-     @override
-     String name() {
-         return GyroBmi160Impl.ROT_PRODUCER;
-     }
+  @override
+  Future<Route> addRouteAsync(RouteBuilder builder) {
+    return _mwPrivate.queueRouteBuilder(builder, GyroBmi160Impl.ROT_PRODUCER);
+  }
 
-     @override
-     void start() {
-         _mwPrivate.sendCommand(Uint8List.fromList(
-             [ModuleType.GYRO.id, GyroBmi160Impl.DATA_INTERRUPT_ENABLE, 1, 0]));
-     }
+  @override
+  String name() {
+    return GyroBmi160Impl.ROT_PRODUCER;
+  }
 
-     @override
-     void stop() {
-         _mwPrivate.sendCommand(Uint8List.fromList(
-             [ModuleType.GYRO.id, GyroBmi160Impl.DATA_INTERRUPT_ENABLE, 0, 1]));
-     }
- }
+  @override
+  void start() {
+    _mwPrivate.sendCommand(Uint8List.fromList(
+        [ModuleType.GYRO.id, GyroBmi160Impl.DATA_INTERRUPT_ENABLE, 1, 0]));
+  }
 
+  @override
+  void stop() {
+    _mwPrivate.sendCommand(Uint8List.fromList(
+        [ModuleType.GYRO.id, GyroBmi160Impl.DATA_INTERRUPT_ENABLE, 0, 1]));
+  }
+}
 
 //class BoschGyrSFloatData extends SFloatData {
 //    private static final long serialVersionUID = -39028787047513082L;
@@ -169,24 +166,36 @@ class BoschGyrCartesianFloatData extends FloatVectorData {
  * Created by etsai on 9/20/16.
  */
 class GyroBmi160Impl extends ModuleImplBase implements GyroBmi160 {
-    static String createUri(DataTypeBase dataType) {
-        switch (dataType.eventConfig[1]) {
-            case DATA:
-                return dataType.attributes.length() > 2 ? "angular-velocity" : String.format(Locale.US, "angular-velocity[%d]", (dataType.attributes.offset >> 1));
-            case PACKED_DATA:
-                return "angular-velocity";
-            default:
-                return null;
-        }
+  static String createUri(DataTypeBase dataType) {
+    switch (dataType.eventConfig[1]) {
+      case DATA:
+        return dataType.attributes.length() > 2
+            ? "angular-velocity"
+            : String.format(Locale.US, "angular-velocity[%d]",
+                (dataType.attributes.offset >> 1));
+      case PACKED_DATA:
+        return "angular-velocity";
+      default:
+        return null;
     }
+  }
 
-    static const int PACKED_ROT_REVISION= 1;
-    static const int  POWER_MODE = 1, DATA_INTERRUPT_ENABLE = 2, CONFIG = 3, DATA = 5, PACKED_DATA= 0x7;
-    static const String ROT_PRODUCER= "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_PRODUCER",
-            ROT_X_AXIS_PRODUCER= "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_X_AXIS_PRODUCER",
-            ROT_Y_AXIS_PRODUCER= "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_Y_AXIS_PRODUCER",
-            ROT_Z_AXIS_PRODUCER= "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_Z_AXIS_PRODUCER",
-            ROT_PACKED_PRODUCER= "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_PACKED_PRODUCER";
+  static const int PACKED_ROT_REVISION = 1;
+  static const int POWER_MODE = 1,
+      DATA_INTERRUPT_ENABLE = 2,
+      CONFIG = 3,
+      DATA = 5,
+      PACKED_DATA = 0x7;
+  static const String ROT_PRODUCER =
+          "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_PRODUCER",
+      ROT_X_AXIS_PRODUCER =
+          "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_X_AXIS_PRODUCER",
+      ROT_Y_AXIS_PRODUCER =
+          "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_Y_AXIS_PRODUCER",
+      ROT_Z_AXIS_PRODUCER =
+          "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_Z_AXIS_PRODUCER",
+      ROT_PACKED_PRODUCER =
+          "com.mbientlab.metawear.impl.GyroBmi160Impl.ROT_PACKED_PRODUCER";
 
 //
 //    ///< ACC_CONF, ACC_RANGE

@@ -30,7 +30,7 @@ import 'package:flutter_metawear/DataToken.dart';
 import 'package:flutter_metawear/MetaWearBoard.dart';
 import 'package:flutter_metawear/Observer.dart';
 import 'package:flutter_metawear/Route.dart';
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/ModuleInfo.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
@@ -39,9 +39,9 @@ import 'package:flutter_metawear/module/Timer.dart';
 
 import 'package:tuple/tuple.dart';
 
-class WithDataToken{
-    final DataToken token;
-    final int dest;
+class WithDataToken {
+  final DataToken token;
+  final int dest;
 
   WithDataToken(this.token, this.dest);
 }
@@ -50,36 +50,42 @@ class WithDataToken{
  * Created by etsai on 8/31/16.
  */
 abstract class MetaWearBoardPrivate {
-    Future<void> boardDisconnect();
-    void sendCommand(Uint8List command,[WithDataToken token]);
+  Future<void> boardDisconnect();
+  void sendCommand(Uint8List command, [WithDataToken token]);
 //    void sendCommand(Uint8List command, int dest, DataToken input);
 
-    void sendCommandForModule(ModuleType module, int register, List<int> parameters,[int id]);
+  void sendCommandForModule(
+      ModuleType module, int register, List<int> parameters,
+      [int id]);
 //    void sendCommand(Constant.Module module, byte register, byte id, byte ... parameters);
 
-    void tagProducer(String name, DataTypeBase producer);
-    DataTypeBase lookupProducer(String name);
-    bool hasProducer(String name);
-    void removeProducerTag(String name);
+  void tagProducer(String name, DataTypeBase producer);
+  DataTypeBase lookupProducer(String name);
+  bool hasProducer(String name);
+  void removeProducerTag(String name);
 
-    ModuleInfo lookupModuleInfo(ModuleType id);
-    List<DataTypeBase> getDataTypes();
-    Map<Type, Module> getModules();
-    void addDataIdHeader(Tuple2<int, int> key);
-    void addDataHandler(Tuple3<int, int, int> key, void handler(Uint8List handler));
-    void addResponseHandler(Tuple2<int, int> key, void handler(Uint8List handler));
-    void removeDataHandler(Tuple3<int, int, int> key, void handler(Uint8List handler));
-    int numDataHandlers(Tuple3<int, int, int> key);
+  ModuleInfo lookupModuleInfo(ModuleType id);
+  List<DataTypeBase> getDataTypes();
+  Map<Type, Module> getModules();
+  void addDataIdHeader(Tuple2<int, int> key);
+  void addDataHandler(
+      Tuple3<int, int, int> key, void handler(Uint8List handler));
+  void addResponseHandler(
+      Tuple2<int, int> key, void handler(Uint8List handler));
+  void removeDataHandler(
+      Tuple3<int, int, int> key, void handler(Uint8List handler));
+  int numDataHandlers(Tuple3<int, int, int> key);
 
-    void removeProcessor(bool sync, int id);
-    void removeRoute(int id);
-    void removeEventManager(int id);
+  void removeProcessor(bool sync, int id);
+  void removeRoute(int id);
+  void removeEventManager(int id);
 
-    Future<Route> queueRouteBuilder(RouteBuilder builder, String producerTag);
-    Future<ScheduledTask> queueTaskManager(CodeBlock mwCode, Uint8List timerConfig);
-    Future<Observer> queueEvent(DataTypeBase owner, CodeBlock codeBlock);
+  Future<Route> queueRouteBuilder(RouteBuilder builder, String producerTag);
+  Future<ScheduledTask> queueTaskManager(
+      CodeBlock mwCode, Uint8List timerConfig);
+  Future<Observer> queueEvent(DataTypeBase owner, CodeBlock codeBlock);
 
-    void logWarn(String message);
+  void logWarn(String message);
 
-    Version getFirmwareVersion();
+  Version getFirmwareVersion();
 }

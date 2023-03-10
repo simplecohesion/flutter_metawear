@@ -22,13 +22,12 @@
  * hello@mbientlab.com.
  */
 
-
 import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/ActiveDataProducer.dart';
 import 'package:flutter_metawear/Route.dart';
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
@@ -38,77 +37,78 @@ import 'package:flutter_metawear/impl/UintData.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:flutter_metawear/module/Switch.dart';
 
-
 import 'package:tuple/tuple.dart';
 
-
-
 class _ActiveDataProducer extends ActiveDataProducer {
+  final MetaWearBoardPrivate mwPrivate;
 
-    final MetaWearBoardPrivate mwPrivate;
+  _ActiveDataProducer(this.mwPrivate);
 
-    _ActiveDataProducer(this.mwPrivate);
+  @override
+  Future<Route> addRouteAsync(RouteBuilder builder) =>
+      mwPrivate.queueRouteBuilder(builder, SwitchImpl.PRODUCER);
 
-    @override
-    Future<Route> addRouteAsync(RouteBuilder builder) =>
-        mwPrivate.queueRouteBuilder(builder, SwitchImpl.PRODUCER);
-
-
-    @override
-    String name() => SwitchImpl.PRODUCER;
+  @override
+  String name() => SwitchImpl.PRODUCER;
 }
 
 /**
  * Created by etsai on 9/4/16.
  */
 class SwitchImpl extends ModuleImplBase implements Switch {
-    static const String PRODUCER= "com.mbientlab.metawear.impl.SwitchImpl.PRODUCER";
-    static const int STATE= 0x1;
+  static const String PRODUCER =
+      "com.mbientlab.metawear.impl.SwitchImpl.PRODUCER";
+  static const int STATE = 0x1;
 
-    static String createUri(DataTypeBase dataType) {
-        switch (Util.clearRead(dataType.eventConfig[1])) {
-            case SwitchImpl.STATE:
-                return "switch";
-            default:
-                return null;
-        }
+  static String createUri(DataTypeBase dataType) {
+    switch (Util.clearRead(dataType.eventConfig[1])) {
+      case SwitchImpl.STATE:
+        return "switch";
+      default:
+        return null;
     }
+  }
 
-    final StreamController<int> _streamController = StreamController<int>();
+  final StreamController<int> _streamController = StreamController<int>();
 
-    ActiveDataProducer _state;
+  ActiveDataProducer _state;
 
-    SwitchImpl(MetaWearBoardPrivate mwPrivate): super(mwPrivate) {
-        this.mwPrivate.tagProducer(PRODUCER, new UintData(ModuleType.SWITCH, STATE, new DataAttributes(Uint8List.fromList([1]), 1, 0, false)));
+  SwitchImpl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate) {
+    this.mwPrivate.tagProducer(
+        PRODUCER,
+        new UintData(ModuleType.SWITCH, STATE,
+            new DataAttributes(Uint8List.fromList([1]), 1, 0, false)));
+  }
+
+  @override
+  void init() {
+    this.mwPrivate.addResponseHandler(
+        Tuple2<int, int>(ModuleType.SWITCH.id, Util.setRead(STATE)),
+        (Uint8List response) => _streamController.add(response[2]));
+  }
+
+  @override
+  ActiveDataProducer state() {
+    if (_state == null) {
+      _state = _ActiveDataProducer(mwPrivate);
     }
+    return _state;
+  }
 
-    @override
-    void init() {
-        this.mwPrivate.addResponseHandler(Tuple2<int,int>( ModuleType.SWITCH.id, Util.setRead(STATE)), (Uint8List response) => _streamController.add(response[2]));
-    }
-
-    @override
-    ActiveDataProducer state() {
-        if (_state == null) {
-            _state = _ActiveDataProducer(mwPrivate);
-        }
-        return _state;
-    }
-
-    @override
-    Future<int> readCurrentStateAsync() async {
-        Stream<int> stream = _streamController.stream.timeout(
-            ModuleType.RESPONSE_TIMEOUT);
-        StreamIterator<int> iterator = StreamIterator(stream);
-        mwPrivate.sendCommand(
-            Uint8List.fromList([ModuleType.SWITCH.id, Util.setRead(STATE)]));
-        TimeoutException exception = TimeoutException(
-            "Did not received button state", ModuleType.RESPONSE_TIMEOUT);
-        if (await iterator.moveNext().catchError((e) => throw exception,
-            test: (e) => e is TimeoutException) == false)
-            throw exception;
-        int current = iterator.current;
-        await iterator.cancel();
-        return current;
-    }
+  @override
+  Future<int> readCurrentStateAsync() async {
+    Stream<int> stream =
+        _streamController.stream.timeout(ModuleType.RESPONSE_TIMEOUT);
+    StreamIterator<int> iterator = StreamIterator(stream);
+    mwPrivate.sendCommand(
+        Uint8List.fromList([ModuleType.SWITCH.id, Util.setRead(STATE)]));
+    TimeoutException exception = TimeoutException(
+        "Did not received button state", ModuleType.RESPONSE_TIMEOUT);
+    if (await iterator.moveNext().catchError((e) => throw exception,
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
+    int current = iterator.current;
+    await iterator.cancel();
+    return current;
+  }
 }

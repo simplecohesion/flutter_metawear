@@ -26,7 +26,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_metawear/ForcedDataProducer.dart';
 import 'package:flutter_metawear/Route.dart';
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
@@ -37,84 +37,81 @@ import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 
 class HumidityBme280SFloatData extends UFloatData {
-    HumidityBme280SFloatData.Default() : super(
-        ModuleType.HUMIDITY, Util.setSilentRead(HumidityBme280Impl.VALUE),
-        new DataAttributes(Uint8List.fromList([4]), 1, 0, false));
+  HumidityBme280SFloatData.Default()
+      : super(ModuleType.HUMIDITY, Util.setSilentRead(HumidityBme280Impl.VALUE),
+            new DataAttributes(Uint8List.fromList([4]), 1, 0, false));
 
-    HumidityBme280SFloatData(DataTypeBase input, ModuleType module,
-        int register, int id, DataAttributes attributes)
-        : super(module, register, attributes, input: input, id: id);
+  HumidityBme280SFloatData(DataTypeBase input, ModuleType module, int register,
+      int id, DataAttributes attributes)
+      : super(module, register, attributes, input: input, id: id);
 
+  @override
+  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
+      DataAttributes attributes) {
+    return new HumidityBme280SFloatData(
+        input, module, register, id, attributes);
+  }
 
-    @override
-    DataTypeBase copy(DataTypeBase input, ModuleType module, int register,
-        int id, DataAttributes attributes) {
-        return new HumidityBme280SFloatData(
-            input, module, register, id, attributes);
-    }
-
-    @override
-    double scale(MetaWearBoardPrivate mwPrivate) {
-        return 1024.0;
-    }
+  @override
+  double scale(MetaWearBoardPrivate mwPrivate) {
+    return 1024.0;
+  }
 }
 
 class _ForcedDataProducer extends ForcedDataProducer {
+  final MetaWearBoardPrivate mwPrivate;
 
-    final MetaWearBoardPrivate mwPrivate;
+  _ForcedDataProducer(this.mwPrivate);
 
-    _ForcedDataProducer(this.mwPrivate);
+  void read() {
+    mwPrivate.lookupProducer(HumidityBme280Impl.PRODUCER).read(mwPrivate);
+  }
 
-    void read() {
-        mwPrivate.lookupProducer(HumidityBme280Impl.PRODUCER).read(mwPrivate);
-    }
+  @override
+  Future<Route> addRouteAsync(RouteBuilder builder) {
+    return mwPrivate.queueRouteBuilder(builder, HumidityBme280Impl.PRODUCER);
+  }
 
-    @override
-    Future<Route> addRouteAsync(RouteBuilder builder) {
-        return mwPrivate.queueRouteBuilder(
-            builder, HumidityBme280Impl.PRODUCER);
-    }
-
-    @override
-    String name() {
-        return HumidityBme280Impl.PRODUCER;
-    }
+  @override
+  String name() {
+    return HumidityBme280Impl.PRODUCER;
+  }
 }
 
 /**
  * Created by etsai on 9/19/16.
  */
 class HumidityBme280Impl extends ModuleImplBase implements HumidityBme280 {
-    static String createUri(DataTypeBase dataType) {
-        switch (Util.clearRead(dataType.eventConfig[1])) {
-            case VALUE:
-                return "relative-humidity";
-            default:
-                return null;
-        }
+  static String createUri(DataTypeBase dataType) {
+    switch (Util.clearRead(dataType.eventConfig[1])) {
+      case VALUE:
+        return "relative-humidity";
+      default:
+        return null;
     }
+  }
 
-    static const String PRODUCER= "com.mbientlab.metawear.impl.HumidityBme280Impl.PRODUCER";
-    static const int VALUE = 1, MODE = 2;
+  static const String PRODUCER =
+      "com.mbientlab.metawear.impl.HumidityBme280Impl.PRODUCER";
+  static const int VALUE = 1, MODE = 2;
 
+  ForcedDataProducer humidityProducer;
 
-    ForcedDataProducer humidityProducer;
+  HumidityBme280Impl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate) {
+    mwPrivate.tagProducer(PRODUCER, new HumidityBme280SFloatData.Default());
+  }
 
-    HumidityBme280Impl(MetaWearBoardPrivate mwPrivate): super(mwPrivate){
+  @override
+  void setOversampling(OversamplingMode mode) {
+    mwPrivate.sendCommand(Uint8List.fromList(
+        [ModuleType.HUMIDITY.id, HumidityBme280Impl.MODE, (mode.index + 1)]));
+  }
 
-        mwPrivate.tagProducer(PRODUCER, new HumidityBme280SFloatData.Default());
+  @override
+  ForcedDataProducer value() {
+    if (humidityProducer == null) {
+      humidityProducer = _ForcedDataProducer(mwPrivate);
     }
-
-    @override
-    void setOversampling(OversamplingMode mode) {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.HUMIDITY.id, HumidityBme280Impl.MODE, (mode.index + 1)]));
-    }
-
-    @override
-    ForcedDataProducer value() {
-        if (humidityProducer == null) {
-            humidityProducer = _ForcedDataProducer(mwPrivate);
-        }
-        return humidityProducer;
-    }
+    return humidityProducer;
+  }
 }

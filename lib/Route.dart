@@ -24,55 +24,43 @@
 
 import 'package:flutter_metawear/Subscriber.dart';
 
-/**
- * Defines how data flows from a data producer to an endpoint
- * @author Eric Tsai
- */
+/// Defines how data flows from a data producer to an endpoint
+
 abstract class Route {
-    /**
-     * Generates a string identifying the data producer chain the subscriber is receiving data from.
-     * This value can be matched with the output from {@link AnonymousRoute#identifier()} if syncing data
-     * using the {@link AnonymousRoute} interface.
-     * @param pos    Numerical position of the subscriber to interact with, starting from 0
-     * @return String identifying the data chain, null if <code>param</code> value is out of bounds
-     */
-    String generateIdentifier(int pos);
-    /**
-     * Sets the environment values  passed into the {@link Subscriber#apply(Data, Object...) apply} function
-     * @param pos   Numerical position of the subscriber to interact with, starting from 0
-     * @param env   Environment values to use with the subscriber
-     * @return True if operation succeeded, false otherwise
-     */
-    bool setEnvironment(int pos, List<Object> env);
-    /**
-     * Quiets the stream the subscriber is listening to, does nothing if the subscriber is handling log data
-     * @param pos   Numerical position of the subscriber to interact with, starting at 0
-     * @return True if operation succeeded, false otherwise
-     */
-    bool unsubscribe(int pos);
-    /**
-     * Reactivates the stream the subscriber is listening to.  If the subscriber
-     * originally listened to log data, the function only updates the subscriber.
-     * @param pos   Numerical position of the subscriber to interact with, starting at
-     * @param subscriber    New subscriber to handle the received data
-     * @return True if operation succeeded, false otherwise
-     */
-    bool resubscribe(int pos,[Subscriber subscriber]);
+  /// Generates a string identifying the data producer chain the subscriber is receiving data from.
+  /// This value can be matched with the output from {@link AnonymousRoute#identifier()} if syncing data
+  /// using the {@link AnonymousRoute} interface.
+  /// @param pos    Numerical position of the subscriber to interact with, starting from 0
+  /// @return String identifying the data chain, null if <code>param</code> value is out of bounds
+  String generateIdentifier(int pos);
 
+  /// Sets the environment values  passed into the {@link Subscriber#apply(Data, Object...) apply} function
+  /// @param pos   Numerical position of the subscriber to interact with, starting from 0
+  /// @param env   Environment values to use with the subscriber
+  /// @return True if operation succeeded, false otherwise
+  bool setEnvironment(int pos, List<Object> env);
 
-    /**
-     * Removes the route and marks the object as inactive
-     */
-    void remove();
-    /**
-     *  Checks  if the route is
-     * @return True if route is active
-     */
-    bool isActive();
-    /**
-     * Unique value identifying the route.  This value can be used with {@link MetaWearBoard#lookupRoute(int)} lookupRoute}
-     * to retrieve the current object
-     * @return Numerical ID identifying the route
-     */
-    int id();
+  /// Quiets the stream the subscriber is listening to, does nothing if the subscriber is handling log data
+  /// @param pos   Numerical position of the subscriber to interact with, starting at 0
+  /// @return True if operation succeeded, false otherwise
+  bool unsubscribe(int pos);
+
+  /// Reactivates the stream the subscriber is listening to.  If the subscriber
+  /// originally listened to log data, the function only updates the subscriber.
+  /// @param pos   Numerical position of the subscriber to interact with, starting at
+  /// @param subscriber    New subscriber to handle the received data
+  /// @return True if operation succeeded, false otherwise
+  bool resubscribe(int pos, [Subscriber subscriber]);
+
+  /// Removes the route and marks the object as inactive
+  void remove();
+
+  ///  Checks  if the route is
+  /// @return True if route is active
+  bool isActive();
+
+  /// Unique value identifying the route.  This value can be used with {@link MetaWearBoard#lookupRoute(int)} lookupRoute}
+  /// to retrieve the current object
+  /// @return Numerical ID identifying the route
+  int id();
 }

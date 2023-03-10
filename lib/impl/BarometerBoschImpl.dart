@@ -22,9 +22,8 @@
  * hello@mbientlab.com.
  */
 
-
 import 'package:flutter_metawear/Route.dart';
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
@@ -37,16 +36,20 @@ import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/AsyncDataProducer.dart';
 import 'dart:typed_data';
 
-
 class BoschPressureUFloatData extends UFloatData {
-
-  BoschPressureUFloatData.Default() : super(
-      ModuleType.BAROMETER, BarometerBoschImpl.PRESSURE,
-      new DataAttributes(Uint8List.fromList([4]), 1, 0, false));
+  BoschPressureUFloatData.Default()
+      : super(ModuleType.BAROMETER, BarometerBoschImpl.PRESSURE,
+            new DataAttributes(Uint8List.fromList([4]), 1, 0, false));
 
   BoschPressureUFloatData(DataTypeBase input, ModuleType module, int register,
       int id, DataAttributes attributes)
-      : super(module, register, attributes, id: id, input: input,);
+      : super(
+          module,
+          register,
+          attributes,
+          id: id,
+          input: input,
+        );
 
   @override
   DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
@@ -59,11 +62,11 @@ class BoschPressureUFloatData extends UFloatData {
     return 256.0;
   }
 }
-class BoschAltitudeSFloatData extends SFloatData {
 
-  BoschAltitudeSFloatData() : super(
-      ModuleType.BAROMETER, BarometerBoschImpl.ALTITUDE,
-      new DataAttributes(Uint8List.fromList([4]), 1, 0, true));
+class BoschAltitudeSFloatData extends SFloatData {
+  BoschAltitudeSFloatData()
+      : super(ModuleType.BAROMETER, BarometerBoschImpl.ALTITUDE,
+            new DataAttributes(Uint8List.fromList([4]), 1, 0, true));
 
   @override
   DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
@@ -82,11 +85,12 @@ class _PressureAsyncDataProducer extends AsyncDataProducer {
 
   _PressureAsyncDataProducer(this._impl);
 
-
   @override
   Future<Route> addRouteAsync(RouteBuilder builder) {
-    return this._impl.mwPrivate.queueRouteBuilder(
-        builder, BarometerBoschImpl.PRESSURE_PRODUCER);
+    return this
+        ._impl
+        .mwPrivate
+        .queueRouteBuilder(builder, BarometerBoschImpl.PRESSURE_PRODUCER);
   }
 
   @override
@@ -95,15 +99,10 @@ class _PressureAsyncDataProducer extends AsyncDataProducer {
   }
 
   @override
-  void start() {
-
-  }
+  void start() {}
 
   @override
-  void stop() {
-
-  }
-
+  void stop() {}
 }
 
 class _AltitudeAsyncDataProducer extends AsyncDataProducer {
@@ -113,8 +112,8 @@ class _AltitudeAsyncDataProducer extends AsyncDataProducer {
 
   @override
   Future<Route> addRouteAsync(RouteBuilder builder) {
-    return _impl.mwPrivate.queueRouteBuilder(
-        builder, BarometerBoschImpl.ALTITUDE_PRODUCER);
+    return _impl.mwPrivate
+        .queueRouteBuilder(builder, BarometerBoschImpl.ALTITUDE_PRODUCER);
   }
 
   @override
@@ -136,7 +135,8 @@ class _AltitudeAsyncDataProducer extends AsyncDataProducer {
 /**
  * Created by etsai on 9/20/16.
  */
-abstract class BarometerBoschImpl extends ModuleImplBase implements BarometerBosch {
+abstract class BarometerBoschImpl extends ModuleImplBase
+    implements BarometerBosch {
   static String createUri(DataTypeBase dataType) {
     switch (dataType.eventConfig[1]) {
       case PRESSURE:
@@ -148,13 +148,12 @@ abstract class BarometerBoschImpl extends ModuleImplBase implements BarometerBos
     }
   }
 
-  static const String PRESSURE_PRODUCER = "com.mbientlab.metawear.impl.BarometerBoschImpl.PRESSURE_PRODUCER",
-      ALTITUDE_PRODUCER = "com.mbientlab.metawear.impl.BarometerBoschImpl.ALTITUDE_PRODUCER";
-  static const int PRESSURE = 1,
-      ALTITUDE = 2,
-      CYCLIC = 4;
+  static const String PRESSURE_PRODUCER =
+          "com.mbientlab.metawear.impl.BarometerBoschImpl.PRESSURE_PRODUCER",
+      ALTITUDE_PRODUCER =
+          "com.mbientlab.metawear.impl.BarometerBoschImpl.ALTITUDE_PRODUCER";
+  static const int PRESSURE = 1, ALTITUDE = 2, CYCLIC = 4;
   static const int CONFIG = 3;
-
 
   int enableAltitude = 0;
 

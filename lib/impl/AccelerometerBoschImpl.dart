@@ -26,14 +26,14 @@
 import 'package:flutter_metawear/AsyncDataProducer.dart';
 import 'package:flutter_metawear/impl/FloatVectorData.dart';
 import 'package:flutter_metawear/impl/ModuleImplBase.dart';
-import 'package:flutter_metawear/module/AccelerometerBosch.dart' as AccelerometerBosch;
+import 'package:flutter_metawear/module/accelerometer_bosch.dart' as AccelerometerBosch;
 import 'dart:typed_data';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/Route.dart';
-import 'package:flutter_metawear/builder/RouteBuilder.dart';
+import 'package:flutter_metawear/builder/route_builder.dart';
 
 abstract class BoschFlatDataProducer implements AccelerometerBosch.FlatDataProducer {
     final MetaWearBoardPrivate _mwPrivate;
@@ -559,7 +559,7 @@ class BoschTapData extends DataTypeBase {
  * Created by etsai on 9/1/16.
  */
 abstract class AccelerometerBoschImpl extends ModuleImplBase implements AccelerometerBosch {
-    static String createUri(DataTypeBase dataType) {
+    static String? createUri(DataTypeBase dataType) {
         switch (dataType.eventConfig[1]) {
             case DATA_INTERRUPT:
                 return dataType.attributes.length() > 2 ? "acceleration" : sprintf("acceleration[%d]", (dataType.attributes.offset >> 1));

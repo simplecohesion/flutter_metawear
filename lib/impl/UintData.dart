@@ -22,11 +22,10 @@
  * hello@mbientlab.com.
  */
 
-
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/Data.dart';
-import 'package:flutter_metawear/builder/RouteComponent.dart';
+import 'package:flutter_metawear/builder/route_component.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataPrivate.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
@@ -46,7 +45,6 @@ class UintData extends DataTypeBase {
   UintData(ModuleType module, int register, DataAttributes attributes,
       {int id, DataTypeBase input})
       : super(module, register, attributes, id: id, input: input);
-
 
   @override
   DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
@@ -86,35 +84,37 @@ class UintData extends DataTypeBase {
             case Operation.ADD:
               {
                 DataAttributes newAttrs = attributes.dataProcessorCopySize(4);
-                processor = casted.rhs < 0 ? new IntData(
-                    this, ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
-                    newAttrs) :
-                dataProcessorCopy(this, newAttrs);
+                processor = casted.rhs < 0
+                    ? new IntData(this, ModuleType.DATA_PROCESSOR,
+                        DataProcessorImpl.NOTIFY, newAttrs)
+                    : dataProcessorCopy(this, newAttrs);
                 break;
               }
             case Operation.MULTIPLY:
               {
                 DataAttributes newAttrs = attributes.dataProcessorCopySize(
                     casted.rhs.abs() < 1 ? attributes.sizes[0] : 4);
-                processor = casted.rhs < 0 ? new IntData(
-                    this, ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
-                    newAttrs) :
-                dataProcessorCopy(this, newAttrs);
+                processor = casted.rhs < 0
+                    ? new IntData(this, ModuleType.DATA_PROCESSOR,
+                        DataProcessorImpl.NOTIFY, newAttrs)
+                    : dataProcessorCopy(this, newAttrs);
                 break;
               }
             case Operation.DIVIDE:
               {
                 DataAttributes newAttrs = attributes.dataProcessorCopySize(
                     casted.rhs.abs() < 1 ? 4 : attributes.sizes[0]);
-                processor = casted.rhs < 0 ? new IntData(
-                    this, ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
-                    newAttrs) :
-                dataProcessorCopy(this, newAttrs);
+                processor = casted.rhs < 0
+                    ? new IntData(this, ModuleType.DATA_PROCESSOR,
+                        DataProcessorImpl.NOTIFY, newAttrs)
+                    : dataProcessorCopy(this, newAttrs);
                 break;
               }
             case Operation.SUBTRACT:
               processor = new IntData(
-                  this, ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
+                  this,
+                  ModuleType.DATA_PROCESSOR,
+                  DataProcessorImpl.NOTIFY,
                   attributes.dataProcessorCopySigned(true));
               break;
             case Operation.ABS_VALUE:
@@ -133,9 +133,13 @@ class UintData extends DataTypeBase {
         {
           Differential casted = config as Differential;
           if (casted.mode == DifferentialOutput.DIFFERENCE) {
-            return Tuple2(new IntData(
-                this, ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
-                attributes.dataProcessorCopySigned(true)), null);
+            return Tuple2(
+                new IntData(
+                    this,
+                    ModuleType.DATA_PROCESSOR,
+                    DataProcessorImpl.NOTIFY,
+                    attributes.dataProcessorCopySigned(true)),
+                null);
           }
         }
     }
