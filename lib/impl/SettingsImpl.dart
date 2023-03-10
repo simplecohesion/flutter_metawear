@@ -25,16 +25,16 @@ import 'dart:async';
 
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
-import 'package:flutter_metawear/module/Settings.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
+import 'package:flutter_metawear/module/settings.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'dart:typed_data';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/Data.dart';
+import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/impl/UintData.dart';
 import 'package:flutter_metawear/impl/MilliUnitsUFloatData.dart';
-import 'package:flutter_metawear/ActiveDataProducer.dart';
+import 'package:flutter_metawear/active_data_producer.dart';
 
 class BatteryStateData extends DataTypeBase {
 

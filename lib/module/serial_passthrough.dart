@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/DataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 
 /// Supported SPI frequencies
 

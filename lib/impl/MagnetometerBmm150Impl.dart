@@ -22,13 +22,13 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/AsyncDataProducer.dart';
-import 'package:flutter_metawear/Data.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
+import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/data/magnetic_field.dart';
 import 'package:flutter_metawear/impl/DataPrivate.dart';
 import 'package:flutter_metawear/impl/FloatVectorData.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/SFloatData.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';

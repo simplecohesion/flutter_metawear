@@ -22,7 +22,7 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 
 /// Enumeration of available colors on the LED
 

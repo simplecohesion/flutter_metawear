@@ -22,8 +22,8 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/ForcedDataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
 
 /// Common base class for all data processor editors

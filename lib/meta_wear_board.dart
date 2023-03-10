@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
-import 'package:flutter_metawear/AnonymousRoute.dart';
-import 'package:flutter_metawear/DeviceInformation.dart';
-import 'package:flutter_metawear/Model.dart';
-import 'package:flutter_metawear/Observer.dart';
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/anonymous_route.dart';
+import 'package:flutter_metawear/device_information.dart';
+import 'package:flutter_metawear/model.dart';
+import 'package:flutter_metawear/observer.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/impl/platform/guid.dart';
 
 /// Object representing a MetaWear board

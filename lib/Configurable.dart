@@ -1,4 +1,4 @@
-import 'package:flutter_metawear/ConfigEditorBase.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
 
 /// Attribute indicating the object can be configured
 /// @param <T>    Type that modifies this object's configuration

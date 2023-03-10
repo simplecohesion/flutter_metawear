@@ -22,8 +22,8 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/ActiveDataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/active_data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 
 /// On-board push button switch
 

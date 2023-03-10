@@ -22,10 +22,9 @@
  * hello@mbientlab.com.
  */
 
-
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/Data.dart';
+import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
@@ -38,19 +37,17 @@ import 'package:flutter_metawear/impl/Util.dart';
 
 import 'package:tuple/tuple.dart';
 
-
 /**
  * Created by etsai on 9/5/16.
  */
 class IntData extends DataTypeBase {
-
   IntData._(DataTypeBase input, ModuleType module, int register, int id,
       DataAttributes attributes)
       : super(module, register, attributes, id: id);
 
-  IntData(DataTypeBase input, ModuleType module, int register, DataAttributes attributes)
+  IntData(DataTypeBase input, ModuleType module, int register,
+      DataAttributes attributes)
       : super(module, register, attributes, input: input);
-
 
   @override
   DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
@@ -64,14 +61,15 @@ class IntData extends DataTypeBase {
   }
 
   @override
-  Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate, Uint8List data, DateTime timestamp, T Function<T>() apply) {
+  Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate,
+      Uint8List data, DateTime timestamp, T Function<T>() apply) {
     final Uint8List buffer = Util.bytesToSIntBuffer(logData, data, attributes);
 
-    return DataPrivate2(timestamp, data, apply, () => 1.0, <T>(){
-      if(T is bool){
+    return DataPrivate2(timestamp, data, apply, () => 1.0, <T>() {
+      if (T is bool) {
         return ByteData.view(buffer.buffer).getInt8(0) > 0 as T;
       }
-      if(T is int){
+      if (T is int) {
         return ByteData.view(buffer.buffer).getInt32(0) as T;
       }
       throw CastError();
@@ -87,9 +85,12 @@ class IntData extends DataTypeBase {
           Maths casted = config as Maths;
           switch (casted.op) {
             case Operation.ABS_VALUE:
-              return Tuple2(new UintData(
-                  ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
-                  attributes.dataProcessorCopySigned(false), input: this),
+              return Tuple2(
+                  new UintData(
+                      ModuleType.DATA_PROCESSOR,
+                      DataProcessorImpl.NOTIFY,
+                      attributes.dataProcessorCopySigned(false),
+                      input: this),
                   null);
             default:
           }

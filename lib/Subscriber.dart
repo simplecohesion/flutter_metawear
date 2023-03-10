@@ -22,7 +22,7 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/Data.dart';
+import 'package:flutter_metawear/data.dart';
 
 /// Handles data that is sent to the local device
 

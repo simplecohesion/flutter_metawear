@@ -22,10 +22,10 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/ConfigEditorBase.dart';
-import 'package:flutter_metawear/Configurable.dart';
-import 'package:flutter_metawear/ForcedDataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
+import 'package:flutter_metawear/configurable.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 import 'package:flutter_metawear/module/ProximityTsl2671.dart';
 
 /// Photodiodes the sensor should use for proximity detection

@@ -22,15 +22,15 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/Data.dart';
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/data.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataPrivate.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/UintData.dart';
 import 'package:flutter_metawear/impl/Util.dart';

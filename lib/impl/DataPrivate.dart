@@ -22,25 +22,22 @@
  * hello@mbientlab.com.
  */
 
-
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:flutter_metawear/Data.dart';
-import 'package:flutter_metawear/Data.dart';
+import 'package:flutter_metawear/data.dart';
+import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:sprintf/sprintf.dart';
 
 abstract class ClassToObject {
-    T apply<T>();
+  T apply<T>();
 }
-
 
 /**
  * Created by etsai on 9/4/16.
  */
 abstract class DataPrivate implements Data {
-
   final DateTime _timestamp;
   final Uint8List _dataBytes;
   final T Function<T>() _mapper;
@@ -65,7 +62,6 @@ abstract class DataPrivate implements Data {
 
   @override
   T value<T>() {
-
     throw CastError();
   }
 
@@ -78,23 +74,20 @@ abstract class DataPrivate implements Data {
     return value;
   }
 
-
   @override
-  String toString() =>
-      sprintf("{timestamp: %s, data: %s}",
-          [formattedTimestamp(), Util.arrayToHexString(bytes())]);
+  String toString() => sprintf("{timestamp: %s, data: %s}",
+      [formattedTimestamp(), Util.arrayToHexString(bytes())]);
 }
 
-class DataPrivate2 implements Data{
-
+class DataPrivate2 implements Data {
   final DateTime _timestamp;
   final Uint8List _dataBytes;
   final T Function<T>() _mapper;
   final double Function() _scale;
   final T Function<T>() _value;
 
-
-  DataPrivate2(this._timestamp, this._dataBytes, this._mapper,this._scale,this._value);
+  DataPrivate2(
+      this._timestamp, this._dataBytes, this._mapper, this._scale, this._value);
 
   @override
   DateTime timestamp() {
@@ -115,7 +108,6 @@ class DataPrivate2 implements Data{
   @override
   Y value<Y>() => _value<Y>();
 
-
   T extra<T>() {
     Object value;
     if (_mapper == null || (value = _mapper<T>()) == null) {
@@ -124,10 +116,7 @@ class DataPrivate2 implements Data{
     return value;
   }
 
-
   @override
-  String toString() =>
-      sprintf("{timestamp: %s, data: %s}",
-          [formattedTimestamp(), Util.arrayToHexString(bytes())]);
-
+  String toString() => sprintf("{timestamp: %s, data: %s}",
+      [formattedTimestamp(), Util.arrayToHexString(bytes())]);
 }

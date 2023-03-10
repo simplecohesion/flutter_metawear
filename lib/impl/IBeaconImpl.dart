@@ -25,9 +25,9 @@
 import 'dart:async';
 
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_metawear/DataToken.dart';
+import 'package:flutter_metawear/data_token.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 
@@ -36,10 +36,10 @@ import 'package:tuple/tuple.dart';
 
 import 'dart:typed_data';
 
-class _ConfigEditor extends ConfigEditor{
-  Guid newUuid= null;
-  int newMajor= null, newMinor= null, newPeriod = null;
-  int newRxPower= null, newTxPower= null;
+class _ConfigEditor extends ConfigEditor {
+  Guid newUuid = null;
+  int newMajor = null, newMinor = null, newPeriod = null;
+  int newRxPower = null, newTxPower = null;
   DataToken majorToken = null, newMinorDataToken = null;
   final MetaWearBoardPrivate mwPrivate;
 
@@ -133,7 +133,7 @@ class _ConfigEditor extends ConfigEditor{
 
   @override
   ConfigEditor rxPower(int power) {
-    this.newRxPower= power;
+    this.newRxPower = power;
     return this;
   }
 
@@ -148,8 +148,8 @@ class _ConfigEditor extends ConfigEditor{
     this.newUuid = adUuid;
     return this;
   }
-
 }
+
 /**
  * Created by etsai on 9/18/16.
  */
@@ -162,17 +162,18 @@ class IBeaconImpl extends ModuleImplBase implements IBeacon {
       TX = 0x6,
       PERIOD = 0x7;
 
-  final StreamController<Uint8List> _streamController = StreamController<Uint8List>();
+  final StreamController<Uint8List> _streamController =
+      StreamController<Uint8List>();
 
   IBeaconImpl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate);
 
   @override
   void init() {
-    for (int id in Uint8List.fromList(
-        [AD_UUID, MAJOR, MINOR, RX, TX, PERIOD])) {
-      this.mwPrivate.addResponseHandler(Tuple2(ModuleType.IBEACON.id, Util.setRead(id)), (Uint8List response) => {
-        _streamController.add(response)
-      });
+    for (int id
+        in Uint8List.fromList([AD_UUID, MAJOR, MINOR, RX, TX, PERIOD])) {
+      this.mwPrivate.addResponseHandler(
+          Tuple2(ModuleType.IBEACON.id, Util.setRead(id)),
+          (Uint8List response) => {_streamController.add(response)});
     }
   }
 
@@ -183,27 +184,26 @@ class IBeaconImpl extends ModuleImplBase implements IBeacon {
 
   @override
   void enable() {
-    mwPrivate.sendCommand(
-        Uint8List.fromList([ModuleType.IBEACON.id, ENABLE, 1]));
+    mwPrivate
+        .sendCommand(Uint8List.fromList([ModuleType.IBEACON.id, ENABLE, 1]));
   }
 
   @override
   void disable() {
-    mwPrivate.sendCommand(
-        Uint8List.fromList([ModuleType.IBEACON.id, ENABLE, 0]));
+    mwPrivate
+        .sendCommand(Uint8List.fromList([ModuleType.IBEACON.id, ENABLE, 0]));
   }
 
   @override
   Future<Configuration> readConfigAsync() async {
     Guid ad = Guid.empty();
-    int major = null,
-        minor = null;
-    int rxPower = null,
-        txPower = null;
+    int major = null, minor = null;
+    int rxPower = null, txPower = null;
     int period = null;
     TimeoutException exception;
 
-    Stream<Uint8List> stream = _streamController.stream.timeout(ModuleType.RESPONSE_TIMEOUT);
+    Stream<Uint8List> stream =
+        _streamController.stream.timeout(ModuleType.RESPONSE_TIMEOUT);
     StreamIterator<Uint8List> iterator = StreamIterator(stream);
 
     mwPrivate.sendCommand(Uint8List.fromList(
@@ -211,8 +211,8 @@ class IBeaconImpl extends ModuleImplBase implements IBeacon {
     exception = TimeoutException(
         "Did not receive ibeacon UUID", ModuleType.RESPONSE_TIMEOUT);
     if (await iterator.moveNext().catchError((e) => throw exception,
-        test: (e) => e is TimeoutException) == false)
-      throw exception;
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
     ad.toByteArray().setAll(0, iterator.current.skip(2));
 
     mwPrivate.sendCommand(Uint8List.fromList(
@@ -220,8 +220,8 @@ class IBeaconImpl extends ModuleImplBase implements IBeacon {
     exception = TimeoutException(
         "Did not receive iBeacon major value", ModuleType.RESPONSE_TIMEOUT);
     if (await iterator.moveNext().catchError((e) => throw exception,
-        test: (e) => e is TimeoutException) == false)
-      throw exception;
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
     major = ByteData.view(iterator.current.buffer).getInt16(2);
 
     mwPrivate.sendCommand(Uint8List.fromList(
@@ -229,8 +229,8 @@ class IBeaconImpl extends ModuleImplBase implements IBeacon {
     exception = TimeoutException(
         "Did not receive iBeacon minor value", ModuleType.RESPONSE_TIMEOUT);
     if (await iterator.moveNext().catchError((e) => throw exception,
-        test: (e) => e is TimeoutException) == false)
-      throw exception;
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
     minor = ByteData.view(iterator.current.buffer).getInt16(2);
 
     mwPrivate.sendCommand(Uint8List.fromList(
@@ -238,16 +238,17 @@ class IBeaconImpl extends ModuleImplBase implements IBeacon {
     exception = TimeoutException(
         "Did not receive iBeacon rx value", ModuleType.RESPONSE_TIMEOUT);
     if (await iterator.moveNext().catchError((e) => throw exception,
-        test: (e) => e is TimeoutException) == false)
-      throw exception;
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
     rxPower = iterator.current[2];
 
     mwPrivate.sendCommand(Uint8List.fromList(
         [ModuleType.IBEACON.id, Util.setRead(TX)])); //request Tx
     exception = TimeoutException(
         "Did not receive iBeacon tx value", ModuleType.RESPONSE_TIMEOUT);
-    if (await iterator.moveNext().catchError((e) => throw exception,test: (e) => e is TimeoutException) == false)
-      throw exception;
+    if (await iterator.moveNext().catchError((e) => throw exception,
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
     txPower = iterator.current[2];
 
     mwPrivate.sendCommand(Uint8List.fromList(
@@ -255,8 +256,8 @@ class IBeaconImpl extends ModuleImplBase implements IBeacon {
     exception = TimeoutException(
         "Did not receive iBeacon period value", ModuleType.RESPONSE_TIMEOUT);
     if (await iterator.moveNext().catchError((e) => throw exception,
-        test: (e) => e is TimeoutException) == false)
-      throw exception;
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
     period = ByteData.view(iterator.current.buffer).getInt16(2);
     await iterator.cancel();
 

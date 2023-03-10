@@ -24,7 +24,7 @@
 
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/Data.dart';
+import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataPrivate.dart';

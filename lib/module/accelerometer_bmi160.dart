@@ -1,7 +1,7 @@
-import 'package:flutter_metawear/AsyncDataProducer.dart';
-import 'package:flutter_metawear/ConfigEditorBase.dart';
-import 'package:flutter_metawear/Configurable.dart';
-import 'package:flutter_metawear/ForcedDataProducer.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
+import 'package:flutter_metawear/configurable.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
 import 'package:flutter_metawear/module/accelerometer.dart' as Accelerometer;
 import 'package:flutter_metawear/module/accelerometer_bosch.dart'
     as AccelerometerBosch;

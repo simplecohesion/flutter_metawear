@@ -27,14 +27,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'MetaWearBoardInfo.dart';
 
-import 'package:flutter_metawear/module/Switch.dart';
+import 'package:flutter_metawear/module/switch.dart';
 import 'package:flutter_metawear/module/Led.dart';
 import 'package:flutter_metawear/module/BarometerBme280.dart';
 import 'package:flutter_metawear/module/BarometerBme280.dart';
 import 'package:flutter_metawear/module/accelerometer_bmi160.dart';
 import 'package:flutter_metawear/module/GyroBmi160.dart';
 import 'package:flutter_metawear/module/Gpio.dart';
-import 'package:flutter_metawear/module/Temperature.dart';
+import 'package:flutter_metawear/module/temperature.dart';
 
 
 /**

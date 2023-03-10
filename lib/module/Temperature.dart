@@ -22,9 +22,9 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/ForcedDataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
-import 'package:flutter_metawear/module/Temperature.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
+import 'package:flutter_metawear/module/temperature.dart';
 
 /// Available types of temperature sensors.  Different boards will have a different combination
 /// of sensor types

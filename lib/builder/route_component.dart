@@ -1,5 +1,5 @@
-import 'package:flutter_metawear/DataToken.dart';
-import 'package:flutter_metawear/Subscriber.dart';
+import 'package:flutter_metawear/data_token.dart';
+import 'package:flutter_metawear/subscriber.dart';
 import 'package:flutter_metawear/builder/route_multicast.dart';
 import 'package:flutter_metawear/builder/route_split.dart';
 import 'package:flutter_metawear/builder/predicate/pulse_output.dart';

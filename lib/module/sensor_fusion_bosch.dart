@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/AsyncDataProducer.dart';
-import 'package:flutter_metawear/ConfigEditorBase.dart';
-import 'package:flutter_metawear/Configurable.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
+import 'package:flutter_metawear/configurable.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 import 'package:flutter_metawear/data/acceleration.dart';
 import 'package:flutter_metawear/data/angular_velocity.dart';
 import 'package:flutter_metawear/data/magnetic_field.dart';
@@ -138,11 +138,7 @@ class CorrectedAcceleration extends Acceleration {
   }
 
   CorrectedAcceleration._(double x, double y, double z, this.accuracy)
-      : super.zero() {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
+      : super(x, y, z);
 
   @override
   String toString() {
@@ -169,11 +165,7 @@ class CorrectedAngularVelocity extends AngularVelocity {
   final CalibrationAccuracy accuracy;
 
   CorrectedAngularVelocity._(double x, double y, double z, this.accuracy)
-      : super.zero() {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
+      : super(x, y, z);
 
   factory CorrectedAngularVelocity(double x, double y, double z, int index) {
     return CorrectedAngularVelocity._(
@@ -184,11 +176,11 @@ class CorrectedAngularVelocity extends AngularVelocity {
   String toString() =>
       sprintf("{x: %.3f%s, y: %.3f%s, z: %.3f%s, accuracy: %s}", [
         x,
-        AngularVelocity.DEGS_PER_SEC,
+        AngularVelocity.degreesPerSecond,
         y,
-        AngularVelocity.DEGS_PER_SEC,
+        AngularVelocity.degreesPerSecond,
         z,
-        AngularVelocity.DEGS_PER_SEC,
+        AngularVelocity.degreesPerSecond,
       ]);
 
   @override
@@ -197,7 +189,11 @@ class CorrectedAngularVelocity extends AngularVelocity {
   }
 
   @override
-  int get hashCode => hash2(super.hashCode, accuracy);
+  int get hashCode {
+    int result = super.hashCode;
+    result = 31 * result + accuracy.hashCode;
+    return result;
+  }
 }
 
 /// Container class holding corrected magnetic field strength data, in micro teslas
@@ -214,7 +210,7 @@ class CorrectedMagneticField extends MagneticField {
 
   @override
   String toString() => sprintf("{x: %.9fT, y: %.9fT, z: %.9fT, accuracy: %s}",
-      [x(), y(), z(), accuracy.toString()]);
+      [x, y, z, accuracy.toString()]);
 
   @override
   int get hashCode {
@@ -238,8 +234,12 @@ class CalibrationData {
   CalibrationData(this.accelerometer, this.gyroscope, this.magnetometer);
 
   @override
-  int get hashCode => hash3(hashObjects(accelerometer), hashObjects(gyroscope),
-      hashObjects(magnetometer));
+  int get hashCode {
+    int result = Object.hashAll(accelerometer);
+    result = 31 * result + Object.hashAll(gyroscope);
+    result = 31 * result + Object.hashAll(magnetometer);
+    return result;
+  }
 
   @override
   bool operator ==(other) {
@@ -251,7 +251,6 @@ class CalibrationData {
 
   @override
   String toString() {
-    // TODO: implement toString
     return sprintf(
         "CalibrationData: {accelerometer: %s, gyroscope: %s, magnetometer: %s}",
         [

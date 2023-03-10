@@ -26,23 +26,23 @@ import 'dart:core';
 import 'dart:typed_data';
 import 'dart:convert';
 
-import 'package:flutter_metawear/Model.dart';
-import 'package:flutter_metawear/module/Switch.dart';
+import 'package:flutter_metawear/model.dart';
+import 'package:flutter_metawear/module/switch.dart';
 import 'package:flutter_metawear/module/Led.dart';
 import 'package:flutter_metawear/module/accelerometer_bma255.dart';
 import 'package:flutter_metawear/module/accelerometer_bmi160.dart';
 import 'package:flutter_metawear/module/AccelerometerMma8452q.dart';
-import 'package:flutter_metawear/module/Temperature.dart';
+import 'package:flutter_metawear/module/temperature.dart';
 import 'package:flutter_metawear/module/Gpio.dart';
 import 'package:flutter_metawear/module/NeoPixel.dart';
 import 'package:flutter_metawear/module/IBeacon.dart';
 import 'package:flutter_metawear/module/Haptic.dart';
 import 'package:flutter_metawear/module/DataProcessor.dart';
 import 'package:flutter_metawear/module/Logging.dart';
-import 'package:flutter_metawear/module/Timer.dart';
-import 'package:flutter_metawear/module/SerialPassthrough.dart';
+import 'package:flutter_metawear/module/timer.dart';
+import 'package:flutter_metawear/module/serial_passthrough.dart';
 import 'package:flutter_metawear/module/Macro.dart';
-import 'package:flutter_metawear/module/Settings.dart';
+import 'package:flutter_metawear/module/settings.dart';
 import 'package:flutter_metawear/module/BarometerBme280.dart';
 import 'package:flutter_metawear/module/BarometerBmp280.dart';
 import 'package:flutter_metawear/module/GyroBmi160.dart';
@@ -51,7 +51,7 @@ import 'package:flutter_metawear/module/MagnetometerBmm150.dart';
 import 'package:flutter_metawear/module/HumidityBme280.dart';
 import 'package:flutter_metawear/module/ColorTcs34725.dart';
 import 'package:flutter_metawear/module/ProximityTsl2671.dart';
-import 'package:flutter_metawear/module/SensorFusionBosch.dart';
+import 'package:flutter_metawear/module/sensor_fusion_bosch.dart';
 import 'package:flutter_metawear/module/Debug.dart';
 
 /// Created by etsai on 8/31/16.

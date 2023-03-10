@@ -24,8 +24,8 @@
 
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/Data.dart';
-import 'package:flutter_metawear/DataToken.dart';
+import 'package:flutter_metawear/data.dart';
+import 'package:flutter_metawear/data_token.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
@@ -37,90 +37,94 @@ import 'DataAttributes.dart';
 import 'DataTypeBase.dart';
 import 'package:tuple/tuple.dart';
 import 'DataPrivate.dart';
+
 class _DataPrivate extends DataPrivate {
-    final MetaWearBoardPrivate mwPrivate;
-    final SFloatData sFloatData;
-    final double scaled;
+  final MetaWearBoardPrivate mwPrivate;
+  final SFloatData sFloatData;
+  final double scaled;
 
-    _DataPrivate(this.mwPrivate, this.sFloatData, this.scaled,
-        DateTime timestamp, Uint8List dataBytes,  T Function<T>() mapping)
-        : super(timestamp, dataBytes, mapping);
+  _DataPrivate(this.mwPrivate, this.sFloatData, this.scaled, DateTime timestamp,
+      Uint8List dataBytes, T Function<T>() mapping)
+      : super(timestamp, dataBytes, mapping);
 
+  @override
+  double scale() => sFloatData.scale(mwPrivate);
 
-    @override
-    double scale() => sFloatData.scale(mwPrivate);
+  @override
+  List<Type> types() => [double];
 
-    @override
-    List<Type> types() => [double];
-
-    @override
-    T value<T>() {
-        if (T is double) {
-            return scaled as T;
-        }
-        return super.value<T>();
+  @override
+  T value<T>() {
+    if (T is double) {
+      return scaled as T;
     }
+    return super.value<T>();
+  }
 }
-
 
 /**
  * Created by etsai on 9/5/16.
  */
 class SFloatData extends DataTypeBase {
+  SFloatData(ModuleType module, int register, DataAttributes attributes,
+      {int id, DataTypeBase input})
+      : super(module, register, attributes, id: id, input: input);
 
-    SFloatData(ModuleType module, int register, DataAttributes attributes,{int id, DataTypeBase input}): super(module,register,attributes,id:id,input:input);
-
-
-    @override
-    DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id, DataAttributes attributes) {
-        if (input == null) {
-            if (this.input == null) {
+  @override
+  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
+      DataAttributes attributes) {
+    if (input == null) {
+      if (this.input == null) {
 //                throw new NullPointerException("SFloatData cannot have null input variable");
-                throw NullThrownError();
-            }
-            return this.input.copy(null, module, register, id, attributes);
+        throw NullThrownError();
+      }
+      return this.input.copy(null, module, register, id, attributes);
+    }
+
+    return SFloatData(module, register, attributes, input: input, id: id);
+  }
+
+  @override
+  num convertToFirmwareUnits(MetaWearBoardPrivate mwPrivate, num value) {
+    return value.toDouble() * scale(mwPrivate);
+  }
+
+  @override
+  Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate,
+      Uint8List data, DateTime timestamp, T Function<T>() apply) {
+    final Uint8List buffer = Util.bytesToSIntBuffer(logData, data, attributes);
+    final double scaled = buffer[0] / scale(mwPrivate);
+    return DataPrivate2(timestamp, data, apply, () => this.scale(mwPrivate),
+        <T>() {
+      if (T is double) {
+        return scaled as T;
+      }
+      throw CastError();
+    });
+  }
+
+  @override
+  Tuple2<DataTypeBase, DataTypeBase> dataProcessorTransform(
+      DataProcessorConfig config, DataProcessorImpl dpModule) {
+    switch (config.id) {
+      case Maths.ID:
+        {
+          Maths casted = config as Maths;
+          switch (casted.op) {
+            case Operation.ABS_VALUE:
+              {
+                DataAttributes copy = attributes.dataProcessorCopySigned(false);
+                return Tuple2(
+                    new UFloatData(ModuleType.DATA_PROCESSOR,
+                        DataProcessorImpl.NOTIFY, copy,
+                        input: this),
+                    null);
+              }
+            default:
+          }
+          break;
         }
-
-        return SFloatData(
-            module, register, attributes, input: input, id: id);
     }
-
-    @override
-    num convertToFirmwareUnits(MetaWearBoardPrivate mwPrivate, num value) {
-        return value.toDouble() * scale(mwPrivate);
-    }
-
-
-    @override
-    Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate, Uint8List data, DateTime timestamp, T Function<T>() apply) {
-        final Uint8List buffer = Util.bytesToSIntBuffer(logData, data, attributes);
-        final double scaled= buffer[0] / scale(mwPrivate);
-        return DataPrivate2(timestamp,data,apply,() => this.scale(mwPrivate), <T>(){
-            if(T is double){
-                return scaled as T;
-            }
-            throw CastError();
-
-        });
-    }
-
-    @override
-    Tuple2<DataTypeBase,DataTypeBase> dataProcessorTransform(DataProcessorConfig config, DataProcessorImpl dpModule) {
-        switch(config.id) {
-            case Maths.ID: {
-                Maths casted =  config as Maths;
-                switch(casted.op) {
-                    case Operation.ABS_VALUE: {
-                        DataAttributes copy= attributes.dataProcessorCopySigned(false);
-                        return Tuple2(new UFloatData(ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY, copy,input: this), null);
-                    }
-                    default:
-                }
-                break;
-            }
-        }
-        return super.dataProcessorTransform(config, dpModule);
-    }
-
-
+    return super.dataProcessorTransform(config, dpModule);
+  }
 }

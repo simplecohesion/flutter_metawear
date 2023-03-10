@@ -22,10 +22,9 @@
  * hello@mbientlab.com.
  */
 
-
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/Data.dart';
+import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
@@ -41,10 +40,10 @@ class ByteArrayData extends DataTypeBase {
       : super(module, register, attributes, input: input, id: id);
 
   @override
-  DataTypeBase copy(DataTypeBase input, ModuleType module, int register,
-      int id, DataAttributes attributes) {
-    return new ByteArrayData(
-        module, register, attributes, input: input, id: id);
+  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
+      DataAttributes attributes) {
+    return new ByteArrayData(module, register, attributes,
+        input: input, id: id);
   }
 
   @override

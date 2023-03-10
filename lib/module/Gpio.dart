@@ -23,8 +23,8 @@
  */
 
 import 'package:flutter_metawear/async_data_producer.dart';
-import 'package:flutter_metawear/ForcedDataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 
 /// Pin change types
 

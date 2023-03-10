@@ -1,10 +1,10 @@
-import 'package:flutter_metawear/ConfigEditorBase.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
 import 'package:flutter_metawear/data/sign.dart';
 import 'package:flutter_metawear/data/tap_type.dart';
 import 'package:flutter_metawear/module/accelerometer.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter_metawear/async_data_producer.dart';
-import 'package:flutter_metawear/Configurable.dart';
+import 'package:flutter_metawear/configurable.dart';
 
 /// Available data ranges
 class AccRange {

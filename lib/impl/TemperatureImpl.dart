@@ -25,14 +25,14 @@
 import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/SFloatData.dart';
-import 'package:flutter_metawear/module/Temperature.dart';
+import 'package:flutter_metawear/module/temperature.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'dart:typed_data';
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:sprintf/sprintf.dart';
 
 class TempSFloatData extends SFloatData {

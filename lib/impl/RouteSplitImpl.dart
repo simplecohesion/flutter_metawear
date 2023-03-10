@@ -22,7 +22,7 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/IllegalRouteOperationException.dart';
+import 'package:flutter_metawear/illegal_route_operation_exception.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
 import 'package:flutter_metawear/builder/route_split.dart';
 import 'package:flutter_metawear/impl/RouteComponentImpl.dart';

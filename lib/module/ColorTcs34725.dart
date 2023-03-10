@@ -1,40 +1,13 @@
-/*
- * Copyright 2014-2015 MbientLab Inc. All rights reserved.
- *
- * IMPORTANT: Your use of this Software is limited to those specific rights granted under the terms of a software
- * license agreement between the user who downloaded the software, his/her employer (which must be your
- * employer) and MbientLab Inc, (the "License").  You may not use this Software unless you agree to abide by the
- * terms of the License which can be found at www.mbientlab.com/terms.  The License limits your use, and you
- * acknowledge, that the Software may be modified, copied, and distributed when used in conjunction with an
- * MbientLab Inc, product.  Other than for the foregoing purpose, you may not use, reproduce, copy, prepare
- * derivative works of, modify, distribute, perform, display or sell this Software and/or its documentation for any
- * purpose.
- *
- * YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE,
- * NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL MBIENTLAB OR ITS LICENSORS BE LIABLE OR
- * OBLIGATED UNDER CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER LEGAL EQUITABLE
- * THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT,
- * PUNITIVE OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY,
- * SERVICES, OR ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *
- * Should you have any questions regarding your right to use this Software, contact MbientLab via email:
- * hello@mbientlab.com.
- */
-
-import 'package:flutter_metawear/ConfigEditorBase.dart';
-import 'package:flutter_metawear/Configurable.dart';
-import 'package:flutter_metawear/ForcedDataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
-import 'package:quiver/core.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
+import 'package:flutter_metawear/configurable.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 import 'package:sprintf/sprintf.dart';
 
 /// Analog gain scales
-
 enum Gain { TCS34725_1X, TCS34725_4X, TCS34725_16X, TCS34725_60X }
 
 /// Configurable parameters for the color detector
-
 abstract class ConfigEditor extends ConfigEditorBase {
   /// Set the integration time, which impacts both the resolution and sensitivity of the adc values.
   /// @param time    Between [2.4, 614.4] milliseconds
@@ -52,7 +25,6 @@ abstract class ConfigEditor extends ConfigEditorBase {
 }
 
 /// Wrapper class encapsulating adc data from the sensor
-
 class ColorAdc {
   final int clear, red, green, blue;
 
@@ -71,7 +43,13 @@ class ColorAdc {
       this.blue == other.blue;
 
   @override
-  int get hashCode => hash4(clear, red, green, blue);
+  int get hashCode {
+    int result = clear;
+    result = 31 * result + red;
+    result = 31 * result + green;
+    result = 31 * result + blue;
+    return result;
+  }
 }
 
 /// Extension of the {@link ForcedDataProducer} interface providing names for the component values

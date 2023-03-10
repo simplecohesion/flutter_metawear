@@ -25,7 +25,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/module/Haptic.dart';
 
@@ -33,35 +33,33 @@ import 'package:flutter_metawear/module/Haptic.dart';
  * Created by etsai on 9/18/16.
  */
 class HapticImpl extends ModuleImplBase implements Haptic {
-    static const int PULSE= 0x1;
-    static const int BUZZER_DUTY_CYCLE= 127;
+  static const int PULSE = 0x1;
+  static const int BUZZER_DUTY_CYCLE = 127;
 
-    static const DEFAULT_DUTY_CYCLE= 100.0;
+  static const DEFAULT_DUTY_CYCLE = 100.0;
 
-    HapticImpl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate);
+  HapticImpl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate);
 
+  @override
+  void startMotor(int pulseWidth, [double dutyCycle = DEFAULT_DUTY_CYCLE]) {
+    int converted = ((dutyCycle / 100.0) * 248).floor();
+    Uint8List payload = Uint8List(4);
+    ByteData byteData = ByteData.view(payload.buffer);
+    byteData.setInt8(0, (converted & 0xff));
+    byteData.setInt16(1, (converted & 0xff), Endian.little);
+    byteData.setInt8(3, (converted & 0xff));
 
-    @override
-    void startMotor(int pulseWidth, [double dutyCycle = DEFAULT_DUTY_CYCLE]) {
-        int converted= ((dutyCycle / 100.0) * 248).floor();
-        Uint8List payload = Uint8List(4);
-        ByteData byteData = ByteData.view(payload.buffer);
-        byteData.setInt8(0, (converted & 0xff));
-        byteData.setInt16(1, (converted & 0xff),Endian.little);
-        byteData.setInt8(3, (converted & 0xff));
+    mwPrivate.sendCommandForModule(ModuleType.HAPTIC, PULSE, payload);
+  }
 
-        mwPrivate.sendCommandForModule(ModuleType.HAPTIC, PULSE, payload);
-    }
-
-
-    @override
-    void startBuzzer(int pulseWidth) {
-        Uint8List payload = Uint8List(4);
-        ByteData byteData = ByteData.view(payload.buffer);
-        byteData.setInt8(0, BUZZER_DUTY_CYCLE);
-        byteData.setInt16(1, pulseWidth,Endian.little);
-        byteData.setInt8(3, 1);
+  @override
+  void startBuzzer(int pulseWidth) {
+    Uint8List payload = Uint8List(4);
+    ByteData byteData = ByteData.view(payload.buffer);
+    byteData.setInt8(0, BUZZER_DUTY_CYCLE);
+    byteData.setInt16(1, pulseWidth, Endian.little);
+    byteData.setInt8(3, 1);
 //        ByteBuffer buffer= ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(BUZZER_DUTY_CYCLE).putShort(pulseWidth).put((byte) 1);
-        mwPrivate.sendCommandForModule(ModuleType.HAPTIC, PULSE, payload);
-    }
+    mwPrivate.sendCommandForModule(ModuleType.HAPTIC, PULSE, payload);
+  }
 }

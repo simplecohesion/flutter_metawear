@@ -24,12 +24,12 @@
 
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/ActiveDataProducer.dart';
-import 'package:flutter_metawear/CodeBlock.dart';
-import 'package:flutter_metawear/ConfigEditorBase.dart';
-import 'package:flutter_metawear/ForcedDataProducer.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
-import 'package:flutter_metawear/Observer.dart';
+import 'package:flutter_metawear/active_data_producer.dart';
+import 'package:flutter_metawear/code_block.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
+import 'package:flutter_metawear/observer.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 
 import 'package:collection/collection.dart';

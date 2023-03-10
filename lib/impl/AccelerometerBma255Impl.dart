@@ -1,7 +1,7 @@
 
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/AsyncDataProducer.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
 import 'package:flutter_metawear/impl/AccelerometerBoschImpl.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/module/accelerometer_bma255.dart' as AccelerometerBma255;

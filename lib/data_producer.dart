@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
 
 /// A component that creates data, such as firmware features (battery level reporting) or sensors

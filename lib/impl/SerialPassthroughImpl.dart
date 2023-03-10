@@ -24,16 +24,16 @@
 
 import 'dart:async';
 
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/ByteArrayData.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/Util.dart';
-import 'package:flutter_metawear/module/SerialPassthrough.dart';
+import 'package:flutter_metawear/module/serial_passthrough.dart';
 import 'dart:typed_data';
 import 'package:sprintf/sprintf.dart';
 import 'package:tuple/tuple.dart';

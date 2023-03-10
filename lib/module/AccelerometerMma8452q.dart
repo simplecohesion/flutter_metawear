@@ -23,8 +23,8 @@
  */
 
 import 'package:collection/collection.dart';
-import 'package:flutter_metawear/AsyncDataProducer.dart';
-import 'package:flutter_metawear/ConfigEditorBase.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
 import 'package:flutter_metawear/Configurable.dart';
 import 'package:flutter_metawear/data/cartesian_axis.dart';
 import 'package:flutter_metawear/data/sign.dart';

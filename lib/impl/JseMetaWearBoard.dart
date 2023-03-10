@@ -27,8 +27,8 @@ import 'dart:collection';
 import 'dart:core';
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/MetaWearBoard.dart';
-import 'package:flutter_metawear/Subscriber.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
+import 'package:flutter_metawear/subscriber.dart';
 import 'package:flutter_metawear/impl/DeviceDataConsumer.dart';
 import 'package:flutter_metawear/impl/LoggingImpl.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
@@ -36,7 +36,7 @@ import 'package:flutter_metawear/impl/Util.dart';
 import 'package:flutter_metawear/impl/Version.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/ModuleInfo.dart';
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/module/Logging.dart';
 
 abstract class RegisterResponseHandler {

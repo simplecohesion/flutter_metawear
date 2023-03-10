@@ -1,4 +1,4 @@
-import 'package:flutter_metawear/Subscriber.dart';
+import 'package:flutter_metawear/subscriber.dart';
 
 /// Pared down variant of the {@link Route} interface that only has one {@link Subscriber}.  This
 /// interface can be used to retrieve logged data from a board that was not programmed by the current

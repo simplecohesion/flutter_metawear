@@ -24,7 +24,7 @@
 
 import 'dart:async';
 
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/module/Debug.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'ModuleType.dart';
@@ -37,92 +37,94 @@ import 'package:flutter_metawear/impl/EventImpl.dart';
  * Created by etsai on 10/11/16.
  */
 class DebugImpl extends ModuleImplBase implements Debug {
-    static const int POWER_SAVE_REVISION = 1;
-    static const int TMP_VALUE = 0x4;
+  static const int POWER_SAVE_REVISION = 1;
+  static const int TMP_VALUE = 0x4;
 
 //    TimedTask<byte[]> readTmpValueTask;
-    StreamController<Uint8List> _valueController = StreamController<Uint8List>();
+  StreamController<Uint8List> _valueController = StreamController<Uint8List>();
 
+  DebugImpl(MetaWearBoardPrivate mwPrivate) : super(null);
 
-    DebugImpl(MetaWearBoardPrivate mwPrivate) : super(null);
+  void init() {
+    this.mwPrivate.addResponseHandler(
+        Tuple2(ModuleType.DEBUG.id, Util.setRead(TMP_VALUE)),
+        (Uint8List response) => _valueController.add(response));
+  }
 
-    void init() {
-        this.mwPrivate.addResponseHandler(Tuple2(ModuleType.DEBUG.id, Util.setRead(TMP_VALUE)), (Uint8List response )=> _valueController.add(response));
+  @override
+  Future<void> resetAsync() async {
+    EventImpl event = mwPrivate.getModules()[EventImpl] as EventImpl;
+    Future<void> task = (event != null && event.activeDataType != null)
+        ? Future(() => {})
+        : mwPrivate.boardDisconnect();
+
+    mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x1]));
+    return task;
+  }
+
+  @override
+  Future<void> disconnectAsync() {
+    EventImpl event = mwPrivate.getModules()[EventImpl] as EventImpl;
+    Future<void> task = (event != null && event.activeDataType != null)
+        ? Future(() => {})
+        : mwPrivate.boardDisconnect();
+
+    mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x6]));
+    return task;
+  }
+
+  @override
+  Future<void> jumpToBootloaderAsync() {
+    EventImpl event = mwPrivate.getModules()[EventImpl] as EventImpl;
+    Future<void> task = (event != null && event.activeDataType != null)
+        ? Future(() => {})
+        : mwPrivate.boardDisconnect();
+
+    mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x2]));
+    return task;
+  }
+
+  @override
+  void resetAfterGc() {
+    mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x5]));
+  }
+
+  @override
+  void writeTmpValue(int value) {
+    Uint8List payload = Uint8List(6);
+    payload[0] = ModuleType.DEBUG.id;
+    payload[1] = TMP_VALUE;
+    ByteData.view(payload.buffer).setInt32(2, value, Endian.little);
+    mwPrivate.sendCommand(payload);
+  }
+
+  @override
+  Future<int> readTmpValueAsync() async {
+    Stream<Uint8List> stream =
+        _valueController.stream.timeout(ModuleType.RESPONSE_TIMEOUT);
+    StreamIterator<Uint8List> iterator = StreamIterator(stream);
+
+    TimeoutException exception = TimeoutException(
+        "Did not received macro id", ModuleType.RESPONSE_TIMEOUT);
+    mwPrivate.sendCommand(
+        Uint8List.fromList([ModuleType.DEBUG.id, Util.setRead(TMP_VALUE)]));
+
+    if (await iterator.moveNext().catchError((e) => throw exception,
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
+    Uint8List selected = iterator.current;
+    await iterator.cancel();
+
+    return ByteData.view(selected.buffer).getUint32(2, Endian.little);
+  }
+
+  @override
+  bool enablePowersave() {
+    if (mwPrivate.lookupModuleInfo(ModuleType.DEBUG).revision >=
+        POWER_SAVE_REVISION) {
+      mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x07]));
+      return true;
     }
-
-    @override
-    Future<void> resetAsync() async {
-        EventImpl event = mwPrivate.getModules()[EventImpl] as EventImpl;
-        Future<void> task = (event != null && event.activeDataType != null)
-            ? Future(() => {})
-            : mwPrivate.boardDisconnect();
-
-
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x1]));
-        return task;
-    }
-
-    @override
-    Future<void> disconnectAsync() {
-        EventImpl event = mwPrivate.getModules()[EventImpl] as EventImpl;
-        Future<void> task = (event != null && event.activeDataType != null)
-            ? Future(() => {})
-            : mwPrivate.boardDisconnect();
-
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x6]));
-        return task;
-    }
-
-    @override
-    Future<void> jumpToBootloaderAsync() {
-        EventImpl event = mwPrivate.getModules()[EventImpl] as EventImpl;
-        Future<void> task = (event != null && event.activeDataType != null)
-            ? Future(() => {})
-            : mwPrivate.boardDisconnect();
-
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x2]));
-        return task;
-    }
-
-    @override
-    void resetAfterGc() {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x5]));
-    }
-
-    @override
-    void writeTmpValue(int value) {
-        Uint8List payload = Uint8List(6);
-        payload[0] = ModuleType.DEBUG.id;
-        payload[1] = TMP_VALUE;
-        ByteData.view(payload.buffer).setInt32(2, value, Endian.little);
-        mwPrivate.sendCommand(payload);
-    }
-
-    @override
-    Future<int> readTmpValueAsync() async {
-        Stream<Uint8List> stream = _valueController.stream.timeout(
-            ModuleType.RESPONSE_TIMEOUT);
-        StreamIterator<Uint8List> iterator = StreamIterator(stream);
-
-        TimeoutException exception = TimeoutException(
-            "Did not received macro id", ModuleType.RESPONSE_TIMEOUT);
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, Util.setRead(TMP_VALUE)]));
-
-        if (await iterator.moveNext().catchError((e) => throw exception,
-            test: (e) => e is TimeoutException) == false)
-            throw exception;
-        Uint8List selected = iterator.current;
-        await iterator.cancel();
-
-        return ByteData.view(selected.buffer).getUint32(2,Endian.little);
-    }
-
-    @override
-    bool enablePowersave() {
-        if (mwPrivate.lookupModuleInfo(ModuleType.DEBUG).revision >= POWER_SAVE_REVISION) {
-            mwPrivate.sendCommand(Uint8List.fromList([ModuleType.DEBUG.id, 0x07]));
-            return true;
-        }
-        return false;
-    }
+    return false;
+  }
 }

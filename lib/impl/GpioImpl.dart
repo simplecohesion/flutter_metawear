@@ -22,18 +22,18 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:flutter_metawear/module/Gpio.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:sprintf/sprintf.dart';
 import 'dart:typed_data';
-import 'package:flutter_metawear/ForcedDataProducer.dart';
-import 'package:flutter_metawear/AsyncDataProducer.dart';
+import 'package:flutter_metawear/forced_data_producer.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
 import 'package:flutter_metawear/impl/UintData.dart';
 import 'package:flutter_metawear/impl/DataAttributes.dart';
 import 'package:flutter_metawear/impl/MilliUnitsUFloatData.dart';

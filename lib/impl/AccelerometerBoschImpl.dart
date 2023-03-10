@@ -23,16 +23,16 @@
  */
 
 
-import 'package:flutter_metawear/AsyncDataProducer.dart';
+import 'package:flutter_metawear/async_data_producer.dart';
 import 'package:flutter_metawear/impl/FloatVectorData.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/module/accelerometer_bosch.dart' as AccelerometerBosch;
 import 'dart:typed_data';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
 
 abstract class BoschFlatDataProducer implements AccelerometerBosch.FlatDataProducer {

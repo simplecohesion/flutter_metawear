@@ -27,7 +27,7 @@ import 'dart:typed_data';
 import 'dart:core';
 import 'dart:collection';
 
-import 'package:flutter_metawear/Subscriber.dart';
+import 'package:flutter_metawear/subscriber.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
 import 'package:flutter_metawear/builder/route_multicast.dart';
 import 'package:flutter_metawear/builder/route_split.dart';
@@ -42,7 +42,7 @@ import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/module/DataProcessor.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
-import 'package:flutter_metawear/IllegalRouteOperationException.dart';
+import 'package:flutter_metawear/illegal_route_operation_exception.dart';
 import 'package:flutter_metawear/builder/predicate/pulse_output.dart';
 
 import 'package:sprintf/sprintf.dart';

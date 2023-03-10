@@ -27,7 +27,7 @@ import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/ModuleImplBase.dart';
+import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/module/Macro.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:tuple/tuple.dart';
@@ -36,104 +36,106 @@ import 'package:tuple/tuple.dart';
  * Created by etsai on 11/30/16.
  */
 class MacroImpl extends ModuleImplBase implements Macro {
-    static const Duration WRITE_MACRO_DELAY = Duration(seconds: 2);
-    static const int ENABLE = 0x1,
-            BEGIN = 0x2, ADD_COMMAND = 0x3, END = 0x4,
-            EXECUTE = 0x5, NOTIFY_ENABLE = 0x6, NOTIFY = 0x7,
-            ERASE_ALL = 0x8,
-            ADD_PARTIAL = 0x9;
+  static const Duration WRITE_MACRO_DELAY = Duration(seconds: 2);
+  static const int ENABLE = 0x1,
+      BEGIN = 0x2,
+      ADD_COMMAND = 0x3,
+      END = 0x4,
+      EXECUTE = 0x5,
+      NOTIFY_ENABLE = 0x6,
+      NOTIFY = 0x7,
+      ERASE_ALL = 0x8,
+      ADD_PARTIAL = 0x9;
 
-    bool _isRecording= false;
-    Queue<Uint8List> commands;
-    bool execOnBoot;
-    StreamController<int> _streamController;
+  bool _isRecording = false;
+  Queue<Uint8List> commands;
+  bool execOnBoot;
+  StreamController<int> _streamController;
 
+  MacroImpl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate);
 
-    MacroImpl(MetaWearBoardPrivate mwPrivate): super(mwPrivate);
+  @override
+  void init() {
+    this.mwPrivate.addResponseHandler(Tuple2(ModuleType.MACRO.id, BEGIN),
+        (Uint8List response) => _streamController.add(response[2]));
+  }
 
+  @override
+  void startRecord([bool execOnBoot = true]) {
+    _isRecording = true;
+    commands = Queue();
+    this.execOnBoot = execOnBoot;
+  }
 
-    @override
-    void init() {
-        this.mwPrivate.addResponseHandler(Tuple2(ModuleType.MACRO.id, BEGIN), (Uint8List response) => _streamController.add(response[2]));
+  @override
+  Future<int> endRecordAsync() async {
+    _isRecording = false;
+    Stream<int> stream =
+        _streamController.stream.timeout(ModuleType.RESPONSE_TIMEOUT);
+    StreamIterator<int> iterator = StreamIterator(stream);
+
+    TimeoutException exception = TimeoutException(
+        "Did not received macro id", MacroImpl.WRITE_MACRO_DELAY);
+    mwPrivate.sendCommand(Uint8List.fromList(
+        [ModuleType.MACRO.id, BEGIN, (this.execOnBoot ? 1 : 0)]));
+    if (await iterator.moveNext().catchError((e) => throw exception,
+            test: (e) => e is TimeoutException) ==
+        false) throw exception;
+
+    while (commands.isNotEmpty) {
+      for (Uint8List converted
+          in convertToMacroCommand(commands.removeLast())) {
+        mwPrivate.sendCommand(converted);
+      }
     }
+    mwPrivate.sendCommand(Uint8List.fromList([ModuleType.MACRO.id, END]));
+    int result = iterator.current;
+    await iterator.cancel();
+    return result;
+  }
 
-    @override
-    void startRecord([bool execOnBoot = true]) {
-        _isRecording = true;
-        commands = Queue();
-        this.execOnBoot = execOnBoot;
+  @override
+  void execute(int id) {
+    mwPrivate
+        .sendCommand(Uint8List.fromList([ModuleType.MACRO.id, EXECUTE, id]));
+  }
+
+  @override
+  void eraseAll() {
+    mwPrivate.sendCommand(Uint8List.fromList([ModuleType.MACRO.id, ERASE_ALL]));
+  }
+
+  void collectCommand(Uint8List command) {
+    commands.add(command);
+  }
+
+  bool isRecording() {
+    return _isRecording;
+  }
+
+  List<Uint8List> convertToMacroCommand(Uint8List command) {
+    if (command.length >= ModuleType.COMMAND_LENGTH) {
+      List<Uint8List> macroCmds = List(2);
+
+      final int PARTIAL_LENGTH = 2;
+      macroCmds[0] = Uint8List(PARTIAL_LENGTH + 2);
+      macroCmds[0][0] = ModuleType.MACRO.id;
+      macroCmds[0][1] = ADD_PARTIAL;
+      macroCmds[0].setAll(2, command);
+
+      macroCmds[1] = Uint8List(command.length - PARTIAL_LENGTH + 2);
+      macroCmds[1][0] = ModuleType.MACRO.id;
+      macroCmds[1][1] = ADD_COMMAND;
+      macroCmds[1].setAll(2, command.skip(PARTIAL_LENGTH));
+
+      return macroCmds;
+    } else {
+      List<Uint8List> macroCmds = List(1);
+      macroCmds[0] = Uint8List(command.length + 2);
+      macroCmds[0][0] = ModuleType.MACRO.id;
+      macroCmds[0][1] = ADD_COMMAND;
+      macroCmds[0].setAll(2, command);
+      return macroCmds;
     }
-
-    @override
-    Future<int> endRecordAsync() async {
-        _isRecording = false;
-        Stream<int> stream = _streamController.stream.timeout(
-            ModuleType.RESPONSE_TIMEOUT);
-        StreamIterator<int> iterator = StreamIterator(stream);
-
-
-        TimeoutException exception = TimeoutException(
-            "Did not received macro id", MacroImpl.WRITE_MACRO_DELAY);
-        mwPrivate.sendCommand(Uint8List.fromList(
-            [ModuleType.MACRO.id, BEGIN, (this.execOnBoot ? 1 : 0)]));
-        if (await iterator.moveNext().catchError((e) => throw exception,
-            test: (e) => e is TimeoutException) == false)
-            throw exception;
-
-        while (commands.isNotEmpty) {
-            for (Uint8List converted in convertToMacroCommand(
-                commands.removeLast())) {
-                mwPrivate.sendCommand(converted);
-            }
-        }
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.MACRO.id, END]));
-        int result = iterator.current;
-        await iterator.cancel();
-        return result;
-    }
-
-    @override
-    void execute(int id) {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.MACRO.id, EXECUTE, id]));
-    }
-
-    @override
-    void eraseAll() {
-        mwPrivate.sendCommand(Uint8List.fromList([ModuleType.MACRO.id, ERASE_ALL]));
-    }
-
-    void collectCommand(Uint8List command) {
-        commands.add(command);
-    }
-
-    bool isRecording() {
-        return _isRecording;
-    }
-
-    List<Uint8List> convertToMacroCommand(Uint8List command) {
-        if (command.length >= ModuleType.COMMAND_LENGTH) {
-            List<Uint8List> macroCmds = List(2);
-
-            final int PARTIAL_LENGTH= 2;
-            macroCmds[0] = Uint8List(PARTIAL_LENGTH + 2);
-            macroCmds[0][0] = ModuleType.MACRO.id;
-            macroCmds[0][1] = ADD_PARTIAL;
-            macroCmds[0].setAll(2,command);
-
-
-            macroCmds[1] = Uint8List(command.length - PARTIAL_LENGTH + 2);
-            macroCmds[1][0] = ModuleType.MACRO.id;
-            macroCmds[1][1] = ADD_COMMAND;
-            macroCmds[1].setAll(2,command.skip(PARTIAL_LENGTH));
-
-            return macroCmds;
-        } else {
-            List<Uint8List> macroCmds = List(1);
-            macroCmds[0]= Uint8List(command.length + 2);
-            macroCmds[0][0]= ModuleType.MACRO.id;
-            macroCmds[0][1]= ADD_COMMAND;
-            macroCmds[0].setAll(2, command);
-            return macroCmds;
-        }
-    }
+  }
 }

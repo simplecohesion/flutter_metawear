@@ -1,4 +1,4 @@
-import 'package:flutter_metawear/DataProducer.dart';
+import 'package:flutter_metawear/data_producer.dart';
 
 /// Data producer that emits data when new data is available.  Call {@link #start()} to begin gathering data
 /// and {@link #stop()} to terminate the data measuring.

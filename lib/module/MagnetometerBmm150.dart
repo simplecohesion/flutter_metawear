@@ -23,9 +23,9 @@
  */
 
 import 'package:flutter_metawear/async_data_producer.dart';
-import 'package:flutter_metawear/ConfigEditorBase.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
-import 'package:flutter_metawear/Configurable.dart';
+import 'package:flutter_metawear/config_editor_base.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
+import 'package:flutter_metawear/configurable.dart';
 
 /// Recommended configurations for the magnetometer as outlined in the specs sheet.
 /// <table summary="Recommended sensor configurations">

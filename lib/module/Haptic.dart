@@ -22,7 +22,7 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 
 /// Provides haptic feedback in the form of a vibrational motor or buzzer
 

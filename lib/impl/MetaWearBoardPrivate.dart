@@ -25,17 +25,17 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/CodeBlock.dart';
-import 'package:flutter_metawear/DataToken.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
-import 'package:flutter_metawear/Observer.dart';
-import 'package:flutter_metawear/Route.dart';
+import 'package:flutter_metawear/code_block.dart';
+import 'package:flutter_metawear/data_token.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
+import 'package:flutter_metawear/observer.dart';
+import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataTypeBase.dart';
 import 'package:flutter_metawear/impl/ModuleInfo.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/Version.dart';
-import 'package:flutter_metawear/module/Timer.dart';
+import 'package:flutter_metawear/module/timer.dart';
 
 import 'package:tuple/tuple.dart';
 

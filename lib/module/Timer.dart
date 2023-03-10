@@ -1,5 +1,5 @@
-import 'package:flutter_metawear/CodeBlock.dart';
-import 'package:flutter_metawear/MetaWearBoard.dart';
+import 'package:flutter_metawear/code_block.dart';
+import 'package:flutter_metawear/meta_wear_board.dart';
 
 /// A task comprising of MetaWear commands programmed to run on-board at a certain times
 abstract class ScheduledTask {
