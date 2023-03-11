@@ -95,13 +95,13 @@ class Util {
     DataTypeBase? current = source;
 
     do {
-      parents.add(current);
+      parents.add(current!);
       current = current.input;
     } while (current != null);
 
     StringBuffer builder = StringBuffer();
     bool first = true;
-    while (!parents.isEmpty) {
+    while (parents.isNotEmpty) {
       if (!first) {
         builder.write(":");
       }

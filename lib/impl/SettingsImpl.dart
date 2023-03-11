@@ -32,7 +32,7 @@ import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'dart:typed_data';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/data.dart';
-import 'package:flutter_metawear/impl/UintData.dart';
+import 'package:flutter_metawear/impl/u_int_data.dart';
 import 'package:flutter_metawear/impl/MilliUnitsUFloatData.dart';
 import 'package:flutter_metawear/active_data_producer.dart';
 

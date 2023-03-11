@@ -6,7 +6,7 @@ import 'package:flutter_metawear/builder/predicate/pulse_output.dart';
 import 'package:flutter_metawear/impl/data_attributes.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/RouteComponentImpl.dart';
-import 'package:flutter_metawear/impl/Version.dart';
+import 'package:flutter_metawear/impl/version.dart';
 
 import 'package:sprintf/sprintf.dart';
 

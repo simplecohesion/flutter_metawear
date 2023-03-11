@@ -1,27 +1,3 @@
-/*
- * Copyright 2014-2015 MbientLab Inc. All rights reserved.
- *
- * IMPORTANT: Your use of this Software is limited to those specific rights granted under the terms of a software
- * license agreement between the user who downloaded the software, his/her employer (which must be your
- * employer) and MbientLab Inc, (the "License").  You may not use this Software unless you agree to abide by the
- * terms of the License which can be found at www.mbientlab.com/terms.  The License limits your use, and you
- * acknowledge, that the Software may be modified, copied, and distributed when used in conjunction with an
- * MbientLab Inc, product.  Other than for the foregoing purpose, you may not use, reproduce, copy, prepare
- * derivative works of, modify, distribute, perform, display or sell this Software and/or its documentation for any
- * purpose.
- *
- * YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE,
- * NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL MBIENTLAB OR ITS LICENSORS BE LIABLE OR
- * OBLIGATED UNDER CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER LEGAL EQUITABLE
- * THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT,
- * PUNITIVE OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY,
- * SERVICES, OR ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *
- * Should you have any questions regarding your right to use this Software, contact MbientLab via email:
- * hello@mbientlab.com.
- */
-
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -33,7 +9,7 @@ import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
-import 'package:flutter_metawear/impl/UintData.dart';
+import 'package:flutter_metawear/impl/u_int_data.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:flutter_metawear/module/switch.dart';
 
@@ -52,15 +28,12 @@ class _ActiveDataProducer extends ActiveDataProducer {
   String name() => SwitchImpl.PRODUCER;
 }
 
-/**
- * Created by etsai on 9/4/16.
- */
 class SwitchImpl extends ModuleImplBase implements Switch {
   static const String PRODUCER =
       "com.mbientlab.metawear.impl.SwitchImpl.PRODUCER";
   static const int STATE = 0x1;
 
-  static String createUri(DataTypeBase dataType) {
+  static String? createUri(DataTypeBase dataType) {
     switch (Util.clearRead(dataType.eventConfig[1])) {
       case SwitchImpl.STATE:
         return "switch";
@@ -71,7 +44,7 @@ class SwitchImpl extends ModuleImplBase implements Switch {
 
   final StreamController<int> _streamController = StreamController<int>();
 
-  ActiveDataProducer _state;
+  ActiveDataProducer? _state;
 
   SwitchImpl(MetaWearBoardPrivate mwPrivate) : super(mwPrivate) {
     this.mwPrivate.tagProducer(
@@ -92,7 +65,7 @@ class SwitchImpl extends ModuleImplBase implements Switch {
     if (_state == null) {
       _state = _ActiveDataProducer(mwPrivate);
     }
-    return _state;
+    return _state!;
   }
 
   @override

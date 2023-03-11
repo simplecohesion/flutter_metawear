@@ -41,7 +41,7 @@ import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/module/sensor_fusion_bosch.dart';
 import 'package:tuple/tuple.dart';
-import 'Util.dart';
+import 'util.dart';
 import 'package:flutter_metawear/module/accelerometer.dart' as Accelerometer;
 import 'package:flutter_metawear/module/accelerometer_bmi160.dart'
     as AccelerometerBmi160;

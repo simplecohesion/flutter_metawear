@@ -32,7 +32,7 @@ import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/data_attributes.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
-import 'package:flutter_metawear/impl/Util.dart';
+import 'package:flutter_metawear/impl/util.dart';
 import 'package:flutter_metawear/module/serial_passthrough.dart';
 import 'dart:typed_data';
 import 'package:sprintf/sprintf.dart';

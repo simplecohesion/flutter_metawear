@@ -45,5 +45,5 @@ abstract class Timer implements Module {
   /// Find the {@link ScheduledTask} object corresponding to the given id
   /// @param id    Task id to lookup
   /// @return Schedule task matching the id, null if no matches
-  ScheduledTask lookupScheduledTask(int id);
+  ScheduledTask? lookupScheduledTask(int id);
 }

@@ -11,7 +11,7 @@ import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/IntData.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
-import 'package:flutter_metawear/impl/UintData.dart';
+import 'package:flutter_metawear/impl/u_int_data.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:tuple/tuple.dart';
 
@@ -30,8 +30,8 @@ class _DataTypeBase extends DataTypeBase {
       : super.raw(config, offset, length);
 
   @override
-  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
-      DataAttributes attributes) {
+  DataTypeBase copy(DataTypeBase? input, ModuleType? module, int register,
+      int id, DataAttributes attributes) {
     throw UnsupportedError("Unsupported DataTypeBase");
   }
 
@@ -142,8 +142,8 @@ abstract class DataTypeBase implements DataToken {
     return input?.scale(mwPrivate) ?? 1;
   }
 
-  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
-      DataAttributes attributes);
+  DataTypeBase copy(DataTypeBase? input, ModuleType module, int register,
+      int id, DataAttributes attributes);
 
   DataTypeBase dataProcessorCopy(
       DataTypeBase input, DataAttributes attributes) {

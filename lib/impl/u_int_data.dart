@@ -23,8 +23,13 @@ class UintData extends DataTypeBase {
   }) : super(module, register, attributes, id: id, input: input);
 
   @override
-  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
-      DataAttributes attributes) {
+  DataTypeBase copy(
+    DataTypeBase? input,
+    ModuleType module,
+    int register,
+    int id,
+    DataAttributes attributes,
+  ) {
     return new UintData(module, register, attributes, input: input, id: id);
   }
 
@@ -34,8 +39,13 @@ class UintData extends DataTypeBase {
   }
 
   @override
-  Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate,
-      Uint8List data, DateTime timestamp, T Function<T>() apply) {
+  Data createMessage(
+    bool logData,
+    MetaWearBoardPrivate mwPrivate,
+    Uint8List data,
+    DateTime timestamp,
+    T Function<T>() apply,
+  ) {
     final Uint8List buffer = Util.bytesToUIntBuffer(logData, data, attributes);
     return DataPrivate2(timestamp, data, apply, () => 1.0, <T>() {
       if (T is bool) {
@@ -50,7 +60,9 @@ class UintData extends DataTypeBase {
 
   @override
   Tuple2<DataTypeBase?, DataTypeBase?> dataProcessorTransform(
-      DataProcessorConfig config, DataProcessorImpl dpModule) {
+    DataProcessorConfig config,
+    DataProcessorImpl dpModule,
+  ) {
     switch (config.id) {
       case Maths.ID:
         {

@@ -3,7 +3,7 @@ import 'dart:core';
 import 'package:sprintf/sprintf.dart';
 
 class Version implements Comparable<Version> {
-  static final RegExp VERSION_STRING_PATTERN =
+  static final RegExp _versionStringPattern =
       RegExp("(\\d+)\\.(\\d+)\\.(\\d+)");
 
 //    static final long serialVersionUID = -6928626294821091652L;
@@ -15,7 +15,7 @@ class Version implements Comparable<Version> {
   Version(this.major, this.minor, this.step);
 
   factory Version.fromString(String versionString) {
-    final matches = VERSION_STRING_PATTERN.firstMatch(versionString);
+    final matches = _versionStringPattern.firstMatch(versionString);
 
     if (matches == null) {
       throw new Exception(

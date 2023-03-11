@@ -37,7 +37,7 @@ import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/FloatVectorData.dart';
 import 'package:flutter_metawear/impl/RouteMulticastImpl.dart';
 import 'package:flutter_metawear/impl/RouteSplitImpl.dart';
-import 'package:flutter_metawear/impl/Version.dart';
+import 'package:flutter_metawear/impl/version.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/module/DataProcessor.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';

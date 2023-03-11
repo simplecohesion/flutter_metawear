@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:flutter_metawear/impl/Util.dart';
+import 'package:flutter_metawear/impl/util.dart';
 
 /// Created by etsai on 8/31/16.
 class ModuleInfo {

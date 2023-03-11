@@ -34,7 +34,7 @@ import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/ModuleInfo.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
-import 'package:flutter_metawear/impl/Version.dart';
+import 'package:flutter_metawear/impl/version.dart';
 import 'package:flutter_metawear/module/timer.dart';
 
 import 'package:tuple/tuple.dart';

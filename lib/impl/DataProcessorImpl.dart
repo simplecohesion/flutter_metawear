@@ -10,7 +10,7 @@ import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/Util.dart';
-import 'package:flutter_metawear/impl/Version.dart';
+import 'package:flutter_metawear/impl/version.dart';
 import 'dart:collection';
 
 import 'package:flutter_metawear/module/DataProcessor.dart';
