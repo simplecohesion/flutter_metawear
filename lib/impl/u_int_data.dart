@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
 import 'package:flutter_metawear/impl/data_attributes.dart';
-import 'package:flutter_metawear/impl/DataPrivate.dart';
+import 'package:flutter_metawear/impl/data_private.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/IntData.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
@@ -44,18 +44,24 @@ class UintData extends DataTypeBase {
     MetaWearBoardPrivate mwPrivate,
     Uint8List data,
     DateTime timestamp,
-    T Function<T>() apply,
+    T? Function<T>()? apply,
   ) {
     final Uint8List buffer = Util.bytesToUIntBuffer(logData, data, attributes);
-    return DataPrivate2(timestamp, data, apply, () => 1.0, <T>() {
-      if (T is bool) {
-        return ByteData.view(buffer.buffer).getInt8(0) > 0 as T;
-      }
-      if (T is int) {
-        return ByteData.view(buffer.buffer).getInt64(0) as T;
-      }
-      throw TypeError();
-    });
+    return DataPrivate2(
+      timestamp,
+      data,
+      apply,
+      () => 1.0,
+      <T>() {
+        if (T is bool) {
+          return ByteData.view(buffer.buffer).getInt8(0) > 0 as T;
+        }
+        if (T is int) {
+          return ByteData.view(buffer.buffer).getInt64(0) as T;
+        }
+        throw TypeError();
+      },
+    );
   }
 
   @override

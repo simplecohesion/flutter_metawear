@@ -1,56 +1,31 @@
-/*
- * Copyright 2014-2015 MbientLab Inc. All rights reserved.
- *
- * IMPORTANT: Your use of this Software is limited to those specific rights granted under the terms of a software
- * license agreement between the user who downloaded the software, his/her employer (which must be your
- * employer) and MbientLab Inc, (the "License").  You may not use this Software unless you agree to abide by the
- * terms of the License which can be found at www.mbientlab.com/terms.  The License limits your use, and you
- * acknowledge, that the Software may be modified, copied, and distributed when used in conjunction with an
- * MbientLab Inc, product.  Other than for the foregoing purpose, you may not use, reproduce, copy, prepare
- * derivative works of, modify, distribute, perform, display or sell this Software and/or its documentation for any
- * purpose.
- *
- * YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE,
- * NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL MBIENTLAB OR ITS LICENSORS BE LIABLE OR
- * OBLIGATED UNDER CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER LEGAL EQUITABLE
- * THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT,
- * PUNITIVE OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY,
- * SERVICES, OR ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *
- * Should you have any questions regarding your right to use this Software, contact MbientLab via email:
- * hello@mbientlab.com.
- */
-
-import 'package:flutter_metawear/Subscriber.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
-import 'package:flutter_metawear/impl/DeviceDataConsumer.dart';
+import 'package:flutter_metawear/impl/device_data_consumer.dart';
 import 'package:flutter_metawear/impl/LoggingImpl.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/module/DataProcessor.dart';
 import 'package:flutter_metawear/module/Logging.dart';
+import 'package:flutter_metawear/subscriber.dart';
 
 import 'dart:typed_data';
 import 'package:tuple/tuple.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
-/**
- * Created by etsai on 10/27/16.
- */
 
 class StreamedDataConsumer extends DeviceDataConsumer {
-  void Function(Uint8List handler) dataResponseHandler;
+  void Function(Uint8List handler)? dataResponseHandler;
 
-  StreamedDataConsumer(DataTypeBase source, Subscriber subscriber)
-      : super(source, subscriber);
+  StreamedDataConsumer(
+    DataTypeBase source,
+    Subscriber? subscriber,
+  ) : super(source, subscriber);
 
   void enableStream(final MetaWearBoardPrivate mwPrivate) {
     addDataHandler(mwPrivate);
 
     if ((source.eventConfig[1] & 0x80) == 0x0) {
-      if (source.eventConfig[2] == DataTypeBase._noDataId) {
+      if (source.eventConfig[2] == DataTypeBase.noDataId) {
         if (mwPrivate.numDataHandlers(source.eventConfigAsTuple()) == 1) {
           mwPrivate.sendCommand(Uint8List.fromList(
               [source.eventConfig[0], source.eventConfig[1], 0x1]));
@@ -77,7 +52,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
 
   void disableStream(MetaWearBoardPrivate mwPrivate) {
     if ((source.eventConfig[1] & 0x80) == 0x0) {
-      if (source.eventConfig[2] == DataTypeBase._noDataId) {
+      if (source.eventConfig[2] == DataTypeBase.noDataId) {
         if (mwPrivate.numDataHandlers(source.eventConfigAsTuple()) == 1) {
           mwPrivate.sendCommand(Uint8List.fromList(
               [source.eventConfig[0], source.eventConfig[1], 0x0]));
@@ -101,12 +76,14 @@ class StreamedDataConsumer extends DeviceDataConsumer {
       }
     }
 
-    mwPrivate.removeDataHandler(
-        source.eventConfigAsTuple(), dataResponseHandler);
+    if (dataResponseHandler == null) {
+      mwPrivate.removeDataHandler(
+          source.eventConfigAsTuple(), dataResponseHandler!);
+    }
   }
 
   void addDataHandler(final MetaWearBoardPrivate mwPrivate) {
-    if (source.eventConfig[2] != DataTypeBase._noDataId) {
+    if (source.eventConfig[2] != DataTypeBase.noDataId) {
       mwPrivate.addDataIdHeader(
           Tuple2(source.eventConfig[0], source.eventConfig[1]));
     }
@@ -115,7 +92,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
         final int dataUnitLength = source.attributes.unitLength();
         dataResponseHandler = (Uint8List response) {
           DateTime now = DateTime.now();
-          Processor accounter = findParent(
+          final accounter = findParent(
               mwPrivate.getModules()[DataProcessor] as DataProcessorImpl,
               source,
               DataProcessorImpl.TYPE_ACCOUNTER);
@@ -123,7 +100,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
               ? AccountType.TIME
               : (accounter.editor.configObj as Accounter).type;
           for (int i = 0,
-                  j = source.eventConfig[2] == DataTypeBase._noDataId ? 2 : 3;
+                  j = source.eventConfig[2] == DataTypeBase.noDataId ? 2 : 3;
               i < source.attributes.copies && j < response.length;
               i++, j += dataUnitLength) {
             Tuple3<DateTime, int, int> account =
@@ -145,7 +122,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
         dataResponseHandler = (Uint8List response) {
           Uint8List dataRaw;
 
-          if (source.eventConfig[2] == DataTypeBase._noDataId) {
+          if (source.eventConfig[2] == DataTypeBase.noDataId) {
             dataRaw = Uint8List(response.length - 2);
             dataRaw.setAll(0, response.skip(2));
           } else {
@@ -157,11 +134,11 @@ class StreamedDataConsumer extends DeviceDataConsumer {
           Tuple3<DateTime, int, int> account;
           if (source.eventConfig[0] == ModuleType.DATA_PROCESSOR.id &&
               source.eventConfig[1] == DataProcessorImpl.NOTIFY) {
-            DataProcessorImpl dataprocessor =
+            final dataprocessor =
                 mwPrivate.getModules()[DataProcessor] as DataProcessorImpl;
-            DataProcessorConfig config = dataprocessor
+            final config = dataprocessor
                 .lookupProcessor(source.eventConfig[2])
-                .editor
+                ?.editor
                 .configObj;
             account = fillTimestamp(
                 mwPrivate,
@@ -180,10 +157,11 @@ class StreamedDataConsumer extends DeviceDataConsumer {
             account = new Tuple3(DateTime.now(), 0, 0);
           }
 
-          Processor packer = findParent(
-              mwPrivate.getModules()[DataProcessor] as DataProcessorImpl,
-              source,
-              DataProcessorImpl.TYPE_PACKER);
+          final packer = findParent(
+            mwPrivate.getModules()[DataProcessor] as DataProcessorImpl,
+            source,
+            DataProcessorImpl.TYPE_PACKER,
+          );
           if (packer != null) {
             final int dataUnitLength =
                 packer.editor.source.attributes.unitLength();
@@ -217,15 +195,18 @@ class StreamedDataConsumer extends DeviceDataConsumer {
       }
     }
 
-    mwPrivate.addDataHandler(source.eventConfigAsTuple(), dataResponseHandler);
+    if (dataResponseHandler == null) {
+      mwPrivate.addDataHandler(
+          source.eventConfigAsTuple(), dataResponseHandler!);
+    }
   }
 
-  static Processor findParent(
-      DataProcessorImpl dataprocessor, DataTypeBase child, int type) {
-    if (child.eventConfig[0] == ModuleType.DATA_PROCESSOR.id &&
-        child.eventConfig[1] == DataProcessorImpl.NOTIFY) {
-      Processor processor = dataprocessor.lookupProcessor(child.eventConfig[2]);
-      if (processor.editor.config[0] == type) {
+  static Processor? findParent(
+      DataProcessorImpl dataprocessor, DataTypeBase? child, int type) {
+    if (child?.eventConfig[0] == ModuleType.DATA_PROCESSOR.id &&
+        child?.eventConfig[1] == DataProcessorImpl.NOTIFY) {
+      final processor = dataprocessor.lookupProcessor(child!.eventConfig[2]);
+      if (processor?.editor.config[0] == type) {
         return processor;
       }
 
@@ -236,20 +217,20 @@ class StreamedDataConsumer extends DeviceDataConsumer {
 
   static Tuple3<DateTime, int, int> fillTimestamp(
       MetaWearBoardPrivate mwPrivate,
-      Processor accounter,
+      Processor? accounter,
       Uint8List response,
       int offset) {
     if (accounter != null) {
       DataProcessorConfig config = accounter.editor.configObj;
       if (config is Accounter) {
-        int size = (config as Accounter).length;
+        int size = config.length;
         Uint8List padded = Uint8List(8);
         padded.setAll(0, response.skip(offset));
 //                System.arraycopy(response, offset, padded, 0, size);
         int tick = ByteData.view(padded.buffer).getUint16(0, Endian.little);
 //                ByteBuffer.wrap(padded).order(ByteOrder.LITTLE_ENDIAN).getLong(0);
 
-        switch ((config as Accounter).type) {
+        switch (config.type) {
           case AccountType.COUNT:
             {
               return Tuple3(DateTime.now(), size + offset, tick);

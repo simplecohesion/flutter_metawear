@@ -29,7 +29,7 @@ import 'package:flutter_metawear/impl/data_attributes.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
-import 'package:flutter_metawear/impl/DataPrivate.dart';
+import 'package:flutter_metawear/impl/data_private.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/u_int_data.dart';

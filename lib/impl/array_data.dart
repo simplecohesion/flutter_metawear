@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/impl/data_attributes.dart';
-import 'package:flutter_metawear/impl/DataPrivate.dart';
+import 'package:flutter_metawear/impl/data_private.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
@@ -20,8 +20,8 @@ class ArrayData extends DataTypeBase {
   }) : super(module, register, attributes, id: id, input: input);
 
   @override
-  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
-      DataAttributes attributes) {
+  DataTypeBase copy(DataTypeBase? input, ModuleType module, int register,
+      int id, DataAttributes attributes) {
     return new ArrayData(module, register, attributes, input: input, id: id);
   }
 
@@ -36,7 +36,7 @@ class ArrayData extends DataTypeBase {
     MetaWearBoardPrivate mwPrivate,
     Uint8List data,
     DateTime timestamp,
-    T Function<T>() apply,
+    T? Function<T>()? apply,
   ) {
     DataProcessorImpl dpModules =
         mwPrivate.getModules()[DataProcessor] as DataProcessorImpl;

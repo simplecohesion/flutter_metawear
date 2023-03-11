@@ -18,7 +18,7 @@ import 'package:tuple/tuple.dart';
 import 'package:flutter_metawear/impl/SerialPassthroughImpl.dart';
 import 'package:flutter_metawear/impl/SettingsImpl.dart';
 import 'package:flutter_metawear/impl/SensorFusionBoschImpl.dart';
-import 'package:flutter_metawear/impl/SwitchImpl.dart';
+import 'package:flutter_metawear/impl/switch_impl.dart';
 
 import 'package:flutter_metawear/module/DataProcessor.dart';
 
@@ -37,7 +37,7 @@ class _DataTypeBase extends DataTypeBase {
 
   @override
   Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate,
-      Uint8List data, DateTime timestamp, T Function<T>() apply) {
+      Uint8List data, DateTime timestamp, T? Function<T>()? apply) {
     throw UnsupportedError("Unsupported DataTypeBase");
   }
 }
@@ -78,7 +78,7 @@ abstract class DataTypeBase implements DataToken {
     return uri;
   }
 
-  static final int _noDataId = 0xff;
+  static final int noDataId = 0xff;
 
   final Uint8List eventConfig;
   final DataAttributes attributes;
@@ -99,7 +99,7 @@ abstract class DataTypeBase implements DataToken {
     int? id,
     DataTypeBase? input,
   })  : this.eventConfig = Uint8List.fromList(
-            [module.id, register, id == null ? _noDataId : id]),
+            [module.id, register, id == null ? noDataId : id]),
         this.attributes = attributes,
         this.input = input {
     this.split = createSplits();
@@ -112,7 +112,7 @@ abstract class DataTypeBase implements DataToken {
 
   void read(MetaWearBoardPrivate mwPrivate, [Uint8List? parameters]) {
     if (parameters == null) {
-      if (eventConfig[2] == _noDataId) {
+      if (eventConfig[2] == noDataId) {
         mwPrivate
             .sendCommand(Uint8List.fromList([eventConfig[0], eventConfig[1]]));
       } else {
@@ -142,19 +142,19 @@ abstract class DataTypeBase implements DataToken {
     return input?.scale(mwPrivate) ?? 1;
   }
 
-  DataTypeBase copy(DataTypeBase? input, ModuleType module, int register,
+  DataTypeBase? copy(DataTypeBase? input, ModuleType module, int register,
       int id, DataAttributes attributes);
 
-  DataTypeBase dataProcessorCopy(
+  DataTypeBase? dataProcessorCopy(
       DataTypeBase input, DataAttributes attributes) {
     return copy(input, ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
-        _noDataId, attributes);
+        noDataId, attributes);
   }
 
-  DataTypeBase dataProcessorStateCopy(
+  DataTypeBase? dataProcessorStateCopy(
       DataTypeBase input, DataAttributes attributes) {
     return copy(input, ModuleType.DATA_PROCESSOR,
-        Util.setSilentRead(DataProcessorImpl.STATE), _noDataId, attributes);
+        Util.setSilentRead(DataProcessorImpl.STATE), noDataId, attributes);
   }
 
   num convertToFirmwareUnits(MetaWearBoardPrivate mwPrivate, num value) {
@@ -162,7 +162,7 @@ abstract class DataTypeBase implements DataToken {
   }
 
   Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate,
-      Uint8List data, DateTime timestamp, T Function<T>() apply);
+      Uint8List data, DateTime timestamp, T? Function<T>()? apply);
 
   Tuple2<DataTypeBase?, DataTypeBase?> dataProcessorTransform(
       DataProcessorConfig config, DataProcessorImpl dpModule) {
@@ -190,7 +190,7 @@ abstract class DataTypeBase implements DataToken {
               casted.counter
                   ? new UintData(ModuleType.DATA_PROCESSOR,
                       Util.setSilentRead(DataProcessorImpl.STATE), attributes,
-                      input: null, id: DataTypeBase._noDataId)
+                      input: null, id: DataTypeBase.noDataId)
                   : dataProcessorStateCopy(this, attributes));
         }
       case Average.ID:
@@ -205,7 +205,7 @@ abstract class DataTypeBase implements DataToken {
                 ModuleType.DATA_PROCESSOR,
                 Util.setSilentRead(DataProcessorImpl.STATE),
                 new DataAttributes(Uint8List.fromList([2]), 1, 0, false),
-                id: DataTypeBase._noDataId));
+                id: DataTypeBase.noDataId));
       case Maths.ID:
         {
           Maths casted = config as Maths;

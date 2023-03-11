@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
 import 'package:flutter_metawear/impl/data_attributes.dart';
-import 'package:flutter_metawear/impl/DataPrivate.dart';
+import 'package:flutter_metawear/impl/data_private.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
@@ -24,7 +24,7 @@ class UFloatData extends DataTypeBase {
   }) : super(module, register, attributes, id: id, input: input);
 
   @override
-  DataTypeBase copy(
+  DataTypeBase? copy(
     DataTypeBase? input,
     ModuleType module,
     int register,
@@ -52,7 +52,7 @@ class UFloatData extends DataTypeBase {
     MetaWearBoardPrivate mwPrivate,
     Uint8List data,
     DateTime timestamp,
-    T Function<T>() apply,
+    T? Function<T>() apply,
   ) {
     Uint8List buffer = Util.bytesToUIntBuffer(logData, data, attributes);
     final double scaled =

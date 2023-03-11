@@ -32,9 +32,6 @@ import 'package:flutter_metawear/module/Macro.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:tuple/tuple.dart';
 
-/**
- * Created by etsai on 11/30/16.
- */
 class MacroImpl extends ModuleImplBase implements Macro {
   static const Duration WRITE_MACRO_DELAY = Duration(seconds: 2);
   static const int ENABLE = 0x1,

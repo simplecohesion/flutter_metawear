@@ -614,8 +614,8 @@ class Fuser extends DataProcessorConfig {
             "No processor named \"" + it + "\" found");
       }
 
-      int id = dpModule.nameToIdMapping[it];
-      Processor value = dpModule.activeProcessors[id];
+      final id = dpModule.nameToIdMapping[it];
+      final value = dpModule.activeProcessors[id];
       if (!(value.editor.configObj is Buffer)) {
         throw new IllegalRouteOperationException(
             "Can only use buffer processors as inputs to the fuser");

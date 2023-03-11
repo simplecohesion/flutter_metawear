@@ -25,7 +25,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/data.dart';
-import 'package:flutter_metawear/data_token.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/data_type_base.dart';
@@ -34,9 +33,8 @@ import 'package:flutter_metawear/impl/u_float_data.dart';
 import 'package:flutter_metawear/impl/util.dart';
 import 'ModuleType.dart';
 import 'data_attributes.dart';
-import 'data_type_base.dart';
 import 'package:tuple/tuple.dart';
-import 'DataPrivate.dart';
+import 'data_private.dart';
 
 class _DataPrivate extends DataPrivate {
   final MetaWearBoardPrivate mwPrivate;
@@ -62,23 +60,20 @@ class _DataPrivate extends DataPrivate {
   }
 }
 
-/**
- * Created by etsai on 9/5/16.
- */
 class SFloatData extends DataTypeBase {
   SFloatData(ModuleType module, int register, DataAttributes attributes,
-      {int id, DataTypeBase input})
+      {int? id, DataTypeBase? input})
       : super(module, register, attributes, id: id, input: input);
 
   @override
-  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
-      DataAttributes attributes) {
+  DataTypeBase? copy(DataTypeBase? input, ModuleType module, int register,
+      int id, DataAttributes attributes) {
     if (input == null) {
       if (this.input == null) {
 //                throw new NullPointerException("SFloatData cannot have null input variable");
-        throw NullThrownError();
+        throw TypeError();
       }
-      return this.input.copy(null, module, register, id, attributes);
+      return this.input?.copy(null, module, register, id, attributes);
     }
 
     return SFloatData(module, register, attributes, input: input, id: id);
@@ -90,8 +85,13 @@ class SFloatData extends DataTypeBase {
   }
 
   @override
-  Data createMessage(bool logData, MetaWearBoardPrivate mwPrivate,
-      Uint8List data, DateTime timestamp, T Function<T>() apply) {
+  Data createMessage(
+    bool logData,
+    MetaWearBoardPrivate mwPrivate,
+    Uint8List data,
+    DateTime timestamp,
+    T Function<T>() apply,
+  ) {
     final Uint8List buffer = Util.bytesToSIntBuffer(logData, data, attributes);
     final double scaled = buffer[0] / scale(mwPrivate);
     return DataPrivate2(timestamp, data, apply, () => this.scale(mwPrivate),
@@ -99,7 +99,7 @@ class SFloatData extends DataTypeBase {
       if (T is double) {
         return scaled as T;
       }
-      throw CastError();
+      throw TypeError();
     });
   }
 

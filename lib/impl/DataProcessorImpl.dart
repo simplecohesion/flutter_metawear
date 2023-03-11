@@ -237,7 +237,7 @@ class DataProcessorImpl extends ModuleImplBase implements DataProcessor {
         {nameToIdMapping[key] = value.editor.source.eventConfig[2]});
   }
 
-  Processor lookupProcessor(int id) {
+  Processor? lookupProcessor(int id) {
     return activeProcessors[id];
   }
 

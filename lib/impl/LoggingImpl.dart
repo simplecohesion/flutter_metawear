@@ -27,7 +27,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_metawear/impl/data_type_base.dart';
-import 'package:flutter_metawear/impl/DeviceDataConsumer.dart';
+import 'package:flutter_metawear/impl/device_data_consumer.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/module/Logging.dart';

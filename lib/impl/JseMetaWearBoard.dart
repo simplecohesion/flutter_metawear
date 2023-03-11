@@ -29,7 +29,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_metawear/meta_wear_board.dart';
 import 'package:flutter_metawear/subscriber.dart';
-import 'package:flutter_metawear/impl/DeviceDataConsumer.dart';
+import 'package:flutter_metawear/impl/device_data_consumer.dart';
 import 'package:flutter_metawear/impl/LoggingImpl.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/util.dart';
