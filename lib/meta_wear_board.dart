@@ -164,7 +164,6 @@ abstract class MetaWearBoard {
 }
 
 /// Sensor, peripheral, or firmware feature
-
 abstract class Module {}
 
 /// Handler for when the API is not expecting a disconnect event

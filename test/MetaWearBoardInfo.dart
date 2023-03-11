@@ -29,58 +29,22 @@ import 'dart:convert';
 import 'package:flutter_metawear/model.dart';
 import 'package:flutter_metawear/module/switch.dart';
 import 'package:flutter_metawear/module/Led.dart';
-import 'package:flutter_metawear/module/accelerometer_bma255.dart';
-import 'package:flutter_metawear/module/accelerometer_bmi160.dart';
-import 'package:flutter_metawear/module/AccelerometerMma8452q.dart';
-import 'package:flutter_metawear/module/temperature.dart';
-import 'package:flutter_metawear/module/Gpio.dart';
-import 'package:flutter_metawear/module/NeoPixel.dart';
-import 'package:flutter_metawear/module/IBeacon.dart';
-import 'package:flutter_metawear/module/Haptic.dart';
+
 import 'package:flutter_metawear/module/DataProcessor.dart';
 import 'package:flutter_metawear/module/Logging.dart';
 import 'package:flutter_metawear/module/timer.dart';
 import 'package:flutter_metawear/module/serial_passthrough.dart';
 import 'package:flutter_metawear/module/Macro.dart';
 import 'package:flutter_metawear/module/settings.dart';
-import 'package:flutter_metawear/module/BarometerBme280.dart';
-import 'package:flutter_metawear/module/BarometerBmp280.dart';
-import 'package:flutter_metawear/module/GyroBmi160.dart';
-import 'package:flutter_metawear/module/AmbientLightLtr329.dart';
-import 'package:flutter_metawear/module/MagnetometerBmm150.dart';
-import 'package:flutter_metawear/module/HumidityBme280.dart';
-import 'package:flutter_metawear/module/ColorTcs34725.dart';
-import 'package:flutter_metawear/module/ProximityTsl2671.dart';
+
 import 'package:flutter_metawear/module/sensor_fusion_bosch.dart';
 import 'package:flutter_metawear/module/Debug.dart';
 
 /// Created by etsai on 8/31/16.
 class MetaWearBoardInfo {
-  static final Map<Type, Uint8List> MODULE_RESPONSE = {
+  static final Map<Type, Uint8List> _moduleResponse = {
     Switch: Uint8List.fromList([0x01, 0x80, 0x00, 0x00]),
     Led: Uint8List.fromList([0x02, 0x80, 0x00, 0x00]),
-    AccelerometerBma255: Uint8List.fromList([0x03, 0x80, 0x03, 0x01]),
-    AccelerometerBmi160: Uint8List.fromList([0x03, 0x80, 0x01, 0x01]),
-    AccelerometerMma8452q: Uint8List.fromList([0x03, 0x80, 0x00, 0x01]),
-    Temperature:
-        Uint8List.fromList([0x04, 0x80, 0x01, 0x00, 0x00, 0x03, 0x01, 0x02]),
-    Gpio: Uint8List.fromList([
-      0x05,
-      0x80,
-      0x00,
-      0x02,
-      0x03,
-      0x03,
-      0x03,
-      0x03,
-      0x01,
-      0x01,
-      0x01,
-      0x01
-    ]),
-    NeoPixel: Uint8List.fromList([0x06, 0x80, 0x00, 0x00]),
-    IBeacon: Uint8List.fromList([0x07, 0x80, 0x00, 0x00]),
-    Haptic: Uint8List.fromList([0x08, 0x80, 0x00, 0x00]),
     DataProcessor: Uint8List.fromList([0x09, 0x80, 0x00, 0x03, 0x1c]),
     Logging: Uint8List.fromList(
         [0x0b, 0x80, 0x00, 0x02, 0x08, 0x80, 0x2b, 0x00, 0x00]),
@@ -88,14 +52,6 @@ class MetaWearBoardInfo {
     SerialPassthrough: Uint8List.fromList([0x0d, 0x80, 0x00, 0x01]),
     Macro: Uint8List.fromList([0x0f, 0x80, 0x00, 0x01, 0x08]),
     Settings: Uint8List.fromList([0x11, 0x80, 0x00, 0x00]),
-    BarometerBme280: Uint8List.fromList([0x12, 0x80, 0x01, 0x00]),
-    BarometerBmp280: Uint8List.fromList([0x12, 0x80, 0x00, 0x00]),
-    GyroBmi160: Uint8List.fromList([0x13, 0x80, 0x00, 0x01]),
-    AmbientLightLtr329: Uint8List.fromList([0x14, 0x80, 0x00, 0x00]),
-    MagnetometerBmm150: Uint8List.fromList([0x15, 0x80, 0x00, 0x01]),
-    HumidityBme280: Uint8List.fromList([0x16, 0x80, 0x00, 0x00]),
-    ColorTcs34725: Uint8List.fromList([0x17, 0x80, 0x00, 0x00]),
-    ProximityTsl2671: Uint8List.fromList([0x18, 0x80, 0x00, 0x00]),
     SensorFusionBosch: Uint8List.fromList([
       0x19,
       0x80,
@@ -112,7 +68,7 @@ class MetaWearBoardInfo {
     ]),
     Debug: Uint8List.fromList([0xfe, 0x80, 0x00, 0x00])
   };
-  static final List<Type> DEFAULT_MODULES = [
+  static final List<Type> _defaultModules = [
     Logging,
     DataProcessor,
     Timer,
@@ -122,17 +78,15 @@ class MetaWearBoardInfo {
     Map<int, Uint8List> responses = Map();
     bool hasDebug = false;
 
-    if (moduleClasses != null) {
-      for (Type clazz in moduleClasses) {
-        if (MODULE_RESPONSE.containsKey(clazz)) {
-          Uint8List response = MODULE_RESPONSE[clazz];
-          responses[response[0]] = Uint8List.fromList(response);
-        }
-        hasDebug |= clazz == Debug;
+    for (Type clazz in moduleClasses) {
+      if (_moduleResponse.containsKey(clazz)) {
+        final response = _moduleResponse[clazz]!;
+        responses[response[0]] = Uint8List.fromList(response);
       }
+      hasDebug |= clazz == Debug;
     }
-    for (Type clazz in DEFAULT_MODULES) {
-      Uint8List response = MODULE_RESPONSE[clazz];
+    for (Type clazz in _defaultModules) {
+      final response = _moduleResponse[clazz]!;
       responses[response[0]] = Uint8List.fromList(response);
     }
 
@@ -154,11 +108,14 @@ class MetaWearBoardInfo {
 
   final Uint8List modelNumber, hardwareRevision, manufacturer, serialNumber;
   final Map<int, Uint8List> moduleResponses = Map();
-  final Model model;
+  final Model? model;
 
-  MetaWearBoardInfo(this.model, String modelNumber, String hardwareRevision,
-      [List<Uint8List> moduleResponsesArray])
-      : this.modelNumber = Utf8Encoder().convert(modelNumber),
+  MetaWearBoardInfo(
+    this.model,
+    String modelNumber,
+    String hardwareRevision,
+    List<Uint8List>? moduleResponsesArray,
+  )   : this.modelNumber = Utf8Encoder().convert(modelNumber),
         this.hardwareRevision = Utf8Encoder().convert(hardwareRevision),
         this.manufacturer =
             Uint8List.fromList([0x30, 0x30, 0x33, 0x42, 0x46, 0x39]),
@@ -184,10 +141,14 @@ class MetaWearBoardInfo {
     }
   }
 
-  factory MetaWearBoardInfo.Modules(List<Type> moduleClasses,
-      [String modelNumber]) {
+  factory MetaWearBoardInfo.modules(
+      List<Type> moduleClasses, String? modelNumber) {
     MetaWearBoardInfo info = MetaWearBoardInfo(
-        null, modelNumber == null ? "deadbeef" : modelNumber, "cafebabe");
+      null,
+      modelNumber == null ? "deadbeef" : modelNumber,
+      "cafebabe",
+      [],
+    );
     info.moduleResponses.addAll(info.createModuleResponses(moduleClasses));
     return info;
   }

@@ -22,9 +22,8 @@
  * hello@mbientlab.com.
  */
 
-
-import 'package:flutter_metawear/impl/DataAttributes.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_attributes.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/UFloatData.dart';
@@ -33,17 +32,20 @@ import 'package:flutter_metawear/impl/UFloatData.dart';
  * Created by etsai on 2/28/17.
  */
 class MilliUnitsUFloatData extends UFloatData {
-    MilliUnitsUFloatData(ModuleType module, int register, DataAttributes attributes,{int id, DataTypeBase input}) : super(module, register, attributes,id:id,input:input);
+  MilliUnitsUFloatData(
+      ModuleType module, int register, DataAttributes attributes,
+      {int id, DataTypeBase input})
+      : super(module, register, attributes, id: id, input: input);
 
+  @override
+  double scale(MetaWearBoardPrivate mwPrivate) {
+    return 1000.0;
+  }
 
-    @override
-    double scale(MetaWearBoardPrivate mwPrivate) {
-        return 1000.0;
-    }
-
-    @override
-    DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id, DataAttributes attributes) {
-        return new MilliUnitsUFloatData(module, register, attributes,input: input,id:id);
-    }
-
+  @override
+  DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
+      DataAttributes attributes) {
+    return new MilliUnitsUFloatData(module, register, attributes,
+        input: input, id: id);
+  }
 }

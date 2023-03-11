@@ -23,10 +23,10 @@
  */
 
 import 'package:flutter_metawear/meta_wear_board.dart';
-import 'package:flutter_metawear/impl/DataAttributes.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_attributes.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/SFloatData.dart';

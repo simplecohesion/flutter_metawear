@@ -44,7 +44,7 @@ main() {
   group('DataProcessor',() {
     BoardInfo info;
     setUp(() {
-      info = MetaWearBoardInfo.Modules([Switch, Led, BarometerBmp280, AccelerometerBmi160, GyroBmi160, Gpio, Temperature]);
+      info = MetaWearBoardInfo.modules([Switch, Led, BarometerBmp280, AccelerometerBmi160, GyroBmi160, Gpio, Temperature]);
 
     });
     test('Rms',() {

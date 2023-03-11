@@ -22,54 +22,69 @@
  * hello@mbientlab.com.
  */
 
-import 'package:flutter_metawear/forced_data_producer.dart';
-import 'package:flutter_metawear/meta_wear_board.dart';
-import 'package:flutter_metawear/module/temperature.dart';
+import 'dart:core';
+import 'dart:typed_data';
+import 'package:collection/collection.dart';
 
-/// Available types of temperature sensors.  Different boards will have a different combination
-/// of sensor types
+class DataAttributes {
+//    private static final long serialVersionUID = 236031852609753664L;
 
-enum SensorType {
-  /// Temperature measured by the nRF SOC
-  NRF_SOC,
+  final Uint8List sizes;
+  final int copies;
+  final int offset;
+  final bool signed;
 
-  /// Temperature measured by an externally connected thermistor
-  EXT_THERMISTOR,
+  DataAttributes(this.sizes, this.copies, this.offset, this.signed);
 
-  /// Temperature measured by either the BMP280 or BME280 sensor
-  BOSCH_ENV,
+  DataAttributes dataProcessorCopy() {
+    Uint8List copy = Uint8List.fromList(sizes);
+    return new DataAttributes(copy, copies, 0, signed);
+  }
 
-  /// Temperature measured by an on-board thermistor
-  PRESET_THERMISTOR
-}
+  DataAttributes dataProcessorCopySize(int newSize) {
+    Uint8List copy = Uint8List(sizes.length);
+    copy.fillRange(0, copy.length, newSize);
+    return new DataAttributes(copy, copies, 0, signed);
+  }
 
-/// Data measured by a temperature sensor
+  DataAttributes dataProcessorCopySigned(bool newSigned) {
+    Uint8List copy = Uint8List.fromList(sizes);
+    return new DataAttributes(copy, copies, 0, newSigned);
+  }
 
-abstract class Sensor extends ForcedDataProducer {
-  /// Get the type of temperature sensor measuring the data
-  /// @return Sensor type
-  SensorType type();
-}
+  DataAttributes dataProcessorCopyCopies(int newCopies) {
+    Uint8List copy = Uint8List.fromList(sizes);
+    return new DataAttributes(copy, newCopies, 0, signed);
+  }
 
-/// Temperature data measured by an externally connected thermistor
+  int length() {
+    return (unitLength() * copies);
+  }
 
-abstract class ExternalThermistor extends Sensor {
-  /// Configures the settings for the thermistor
-  /// @param dataPin           GPIO pin that reads the data
-  /// @param pulldownPin       GPIO pin the pulldown resistor is connected to
-  /// @param activeHigh        True if the pulldown pin is active high
-  void configure(int dataPin, int pulldownPin, bool activeHigh);
-}
+  int unitLength() {
+    int sum = 0;
+    for (int elem in sizes) {
+      sum += elem;
+    }
+    return sum;
+  }
 
-/// Accesses the temperature sensors
+  @override
+  bool operator ==(other) {
+    if (this == other) return true;
+    return other is DataAttributes &&
+        copies == other.copies &&
+        offset == other.offset &&
+        signed == other.signed &&
+        ListEquality().equals(sizes, other.sizes);
+  }
 
-abstract class Temperature implements Module {
-  /// Get an array of available temperature sensors
-  /// @return Temperature sensors array
-  List<Sensor> sensors();
-
-  /// Find all temperature sensors whose {@link Sensor#type()} function matches the {@code type} parameter
-  /// @param type    Sensor type to look for
-  /// @return Array of sensors matching the sensor type, null if no matches found
-  List<Sensor> findSensors(SensorType type);
+  @override
+  int get hashCode {
+    int result = Object.hashAll(sizes);
+    result = 31 * result + copies;
+    result = 31 * result + offset;
+    result = 31 * result + (signed ? 1 : 0);
+    return result;
+  }
 }

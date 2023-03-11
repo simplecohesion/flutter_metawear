@@ -31,7 +31,7 @@ import 'package:flutter_metawear/meta_wear_board.dart';
 import 'package:flutter_metawear/observer.dart';
 import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/ModuleInfo.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/Version.dart';
@@ -46,9 +46,6 @@ class WithDataToken {
   WithDataToken(this.token, this.dest);
 }
 
-/**
- * Created by etsai on 8/31/16.
- */
 abstract class MetaWearBoardPrivate {
   Future<void> boardDisconnect();
   void sendCommand(Uint8List command, [WithDataToken token]);

@@ -24,7 +24,7 @@
 
 import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/subscriber.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 
 /**

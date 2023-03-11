@@ -33,7 +33,7 @@ import 'package:flutter_metawear/builder/route_multicast.dart';
 import 'package:flutter_metawear/builder/route_split.dart';
 import 'package:flutter_metawear/impl/ColorTcs34725Impl.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/FloatVectorData.dart';
 import 'package:flutter_metawear/impl/RouteMulticastImpl.dart';
 import 'package:flutter_metawear/impl/RouteSplitImpl.dart';

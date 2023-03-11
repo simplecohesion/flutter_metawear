@@ -5,7 +5,7 @@ import 'package:flutter_metawear/forced_data_producer.dart';
 import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
@@ -77,8 +77,12 @@ class ProcessorEntry {
 }
 
 class DataProcessorImpl extends ModuleImplBase implements DataProcessor {
-  static String? createUri(DataTypeBase dataType,
-      DataProcessorImpl dataprocessor, Version firmware, int revision) {
+  static String? createUri(
+    DataTypeBase dataType,
+    DataProcessorImpl dataprocessor,
+    Version firmware,
+    int revision,
+  ) {
     int register = Util.clearRead(dataType.eventConfig[1]);
     switch (register) {
       case NOTIFY:

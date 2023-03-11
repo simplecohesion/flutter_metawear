@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_metawear/illegal_route_operation_exception.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
 import 'package:flutter_metawear/builder/predicate/pulse_output.dart';
-import 'package:flutter_metawear/impl/DataAttributes.dart';
+import 'package:flutter_metawear/impl/data_attributes.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/RouteComponentImpl.dart';
 import 'package:flutter_metawear/impl/Version.dart';

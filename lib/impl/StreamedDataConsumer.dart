@@ -25,7 +25,7 @@
 import 'package:flutter_metawear/Subscriber.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/DeviceDataConsumer.dart';
 import 'package:flutter_metawear/impl/LoggingImpl.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
@@ -50,7 +50,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
     addDataHandler(mwPrivate);
 
     if ((source.eventConfig[1] & 0x80) == 0x0) {
-      if (source.eventConfig[2] == DataTypeBase.NO_DATA_ID) {
+      if (source.eventConfig[2] == DataTypeBase._noDataId) {
         if (mwPrivate.numDataHandlers(source.eventConfigAsTuple()) == 1) {
           mwPrivate.sendCommand(Uint8List.fromList(
               [source.eventConfig[0], source.eventConfig[1], 0x1]));
@@ -77,7 +77,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
 
   void disableStream(MetaWearBoardPrivate mwPrivate) {
     if ((source.eventConfig[1] & 0x80) == 0x0) {
-      if (source.eventConfig[2] == DataTypeBase.NO_DATA_ID) {
+      if (source.eventConfig[2] == DataTypeBase._noDataId) {
         if (mwPrivate.numDataHandlers(source.eventConfigAsTuple()) == 1) {
           mwPrivate.sendCommand(Uint8List.fromList(
               [source.eventConfig[0], source.eventConfig[1], 0x0]));
@@ -106,7 +106,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
   }
 
   void addDataHandler(final MetaWearBoardPrivate mwPrivate) {
-    if (source.eventConfig[2] != DataTypeBase.NO_DATA_ID) {
+    if (source.eventConfig[2] != DataTypeBase._noDataId) {
       mwPrivate.addDataIdHeader(
           Tuple2(source.eventConfig[0], source.eventConfig[1]));
     }
@@ -123,7 +123,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
               ? AccountType.TIME
               : (accounter.editor.configObj as Accounter).type;
           for (int i = 0,
-                  j = source.eventConfig[2] == DataTypeBase.NO_DATA_ID ? 2 : 3;
+                  j = source.eventConfig[2] == DataTypeBase._noDataId ? 2 : 3;
               i < source.attributes.copies && j < response.length;
               i++, j += dataUnitLength) {
             Tuple3<DateTime, int, int> account =
@@ -145,7 +145,7 @@ class StreamedDataConsumer extends DeviceDataConsumer {
         dataResponseHandler = (Uint8List response) {
           Uint8List dataRaw;
 
-          if (source.eventConfig[2] == DataTypeBase.NO_DATA_ID) {
+          if (source.eventConfig[2] == DataTypeBase._noDataId) {
             dataRaw = Uint8List(response.length - 2);
             dataRaw.setAll(0, response.skip(2));
           } else {

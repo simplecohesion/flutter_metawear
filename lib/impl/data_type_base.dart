@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/data_token.dart';
-import 'package:flutter_metawear/impl/ArrayData.dart';
+import 'package:flutter_metawear/impl/array_data.dart';
 import 'package:flutter_metawear/builder/route_component.dart';
-import 'package:flutter_metawear/impl/ByteArrayData.dart';
-import 'package:flutter_metawear/impl/DataAttributes.dart';
+import 'package:flutter_metawear/impl/byte_array_data.dart';
+import 'package:flutter_metawear/impl/data_attributes.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
 import 'package:flutter_metawear/impl/IntData.dart';
@@ -13,30 +13,14 @@ import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
 import 'package:flutter_metawear/impl/UintData.dart';
 import 'package:flutter_metawear/impl/Util.dart';
-import 'package:flutter_metawear/module/AccelerometerMma8452q.dart';
 import 'package:tuple/tuple.dart';
 
 import 'package:flutter_metawear/impl/SerialPassthroughImpl.dart';
-import 'package:flutter_metawear/impl/BarometerBoschImpl.dart';
 import 'package:flutter_metawear/impl/SettingsImpl.dart';
-import 'package:flutter_metawear/impl/GyroBmi160Impl.dart';
-import 'package:flutter_metawear/impl/AmbientLightLtr329Impl.dart';
-import 'package:flutter_metawear/impl/MagnetometerBmm150Impl.dart';
-import 'package:flutter_metawear/impl/HumidityBme280Impl.dart';
-import 'package:flutter_metawear/impl/ColorTcs34725Impl.dart';
-import 'package:flutter_metawear/impl/ProximityTsl2671Impl.dart';
 import 'package:flutter_metawear/impl/SensorFusionBoschImpl.dart';
 import 'package:flutter_metawear/impl/SwitchImpl.dart';
-import 'package:flutter_metawear/impl/TemperatureImpl.dart';
-import 'package:flutter_metawear/impl/GpioImpl.dart';
-import 'package:flutter_metawear/impl/AccelerometerMma8452qImpl.dart';
-import 'package:flutter_metawear/impl/AccelerometerBmi160Impl.dart';
-import 'package:flutter_metawear/impl/AccelerometerBoschImpl.dart';
 
 import 'package:flutter_metawear/module/DataProcessor.dart';
-import 'package:flutter_metawear/module/accelerometer.dart';
-import 'package:flutter_metawear/module/accelerometer_bmi160.dart';
-import 'package:flutter_metawear/module/accelerometer_bma255.dart';
 
 import 'package:flutter_metawear/builder/predicate/pulse_output.dart';
 import 'dart:math';
@@ -66,26 +50,10 @@ abstract class DataTypeBase implements DataToken {
       case ModuleType.SWITCH:
         uri = SwitchImpl.createUri(dataType);
         break;
-      case ModuleType.ACCELEROMETER:
-        final module = mwPrivate.getModules()[Accelerometer];
-        if (module is AccelerometerMma8452q) {
-          uri = AccelerometerMma8452qImpl.createUri(dataType);
-        } else if (module is AccelerometerBmi160) {
-          uri = AccelerometerBmi160Impl.createUri(dataType);
-        } else if (module is AccelerometerBma255) {
-          uri = AccelerometerBoschImpl.createUri(dataType);
-        }
-        break;
-      case ModuleType.TEMPERATURE:
-        uri = TemperatureImpl.createUri(dataType);
-        break;
-      case ModuleType.GPIO:
-        uri = GpioImpl.createUri(dataType);
-        break;
       case ModuleType.DATA_PROCESSOR:
         uri = DataProcessorImpl.createUri(
             dataType,
-            mwPrivate.getModules()[DataProcessor],
+            mwPrivate.getModules()[DataProcessor] as DataProcessorImpl,
             mwPrivate.getFirmwareVersion(),
             mwPrivate.lookupModuleInfo(ModuleType.DATA_PROCESSOR).revision);
         break;
@@ -94,27 +62,6 @@ abstract class DataTypeBase implements DataToken {
         break;
       case ModuleType.SETTINGS:
         uri = SettingsImpl.createUri(dataType);
-        break;
-      case ModuleType.BAROMETER:
-        uri = BarometerBoschImpl.createUri(dataType);
-        break;
-      case ModuleType.GYRO:
-        uri = GyroBmi160Impl.createUri(dataType);
-        break;
-      case ModuleType.AMBIENT_LIGHT:
-        uri = AmbientLightLtr329Impl.createUri(dataType);
-        break;
-      case ModuleType.MAGNETOMETER:
-        uri = MagnetometerBmm150Impl.createUri(dataType);
-        break;
-      case ModuleType.HUMIDITY:
-        uri = HumidityBme280Impl.createUri(dataType);
-        break;
-      case ModuleType.COLOR_DETECTOR:
-        uri = ColorTcs34725Impl.createUri(dataType);
-        break;
-      case ModuleType.PROXIMITY:
-        uri = ProximityTsl2671Impl.createUri(dataType);
         break;
       case ModuleType.SENSOR_FUSION:
         uri = SensorFusionBoschImpl.createUri(dataType);
@@ -131,7 +78,7 @@ abstract class DataTypeBase implements DataToken {
     return uri;
   }
 
-  static final int NO_DATA_ID = 0xff;
+  static final int _noDataId = 0xff;
 
   final Uint8List eventConfig;
   final DataAttributes attributes;
@@ -145,10 +92,14 @@ abstract class DataTypeBase implements DataToken {
         attributes =
             DataAttributes(Uint8List.fromList([length]), 1, offset, false);
 
-  DataTypeBase(ModuleType module, int register, DataAttributes attributes,
-      {int id, DataTypeBase input})
-      : this.eventConfig = Uint8List.fromList(
-            [module.id, register, id == null ? NO_DATA_ID : id]),
+  DataTypeBase(
+    ModuleType module,
+    int register,
+    DataAttributes attributes, {
+    int? id,
+    DataTypeBase? input,
+  })  : this.eventConfig = Uint8List.fromList(
+            [module.id, register, id == null ? _noDataId : id]),
         this.attributes = attributes,
         this.input = input {
     this.split = createSplits();
@@ -161,7 +112,7 @@ abstract class DataTypeBase implements DataToken {
 
   void read(MetaWearBoardPrivate mwPrivate, [Uint8List? parameters]) {
     if (parameters == null) {
-      if (eventConfig[2] == NO_DATA_ID) {
+      if (eventConfig[2] == _noDataId) {
         mwPrivate
             .sendCommand(Uint8List.fromList([eventConfig[0], eventConfig[1]]));
       } else {
@@ -188,7 +139,7 @@ abstract class DataTypeBase implements DataToken {
   }
 
   double scale(MetaWearBoardPrivate mwPrivate) {
-    return (input == null) ? 1.0 : input?.scale(mwPrivate);
+    return input?.scale(mwPrivate) ?? 1;
   }
 
   DataTypeBase copy(DataTypeBase input, ModuleType module, int register, int id,
@@ -197,13 +148,13 @@ abstract class DataTypeBase implements DataToken {
   DataTypeBase dataProcessorCopy(
       DataTypeBase input, DataAttributes attributes) {
     return copy(input, ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY,
-        NO_DATA_ID, attributes);
+        _noDataId, attributes);
   }
 
   DataTypeBase dataProcessorStateCopy(
       DataTypeBase input, DataAttributes attributes) {
     return copy(input, ModuleType.DATA_PROCESSOR,
-        Util.setSilentRead(DataProcessorImpl.STATE), NO_DATA_ID, attributes);
+        Util.setSilentRead(DataProcessorImpl.STATE), _noDataId, attributes);
   }
 
   num convertToFirmwareUnits(MetaWearBoardPrivate mwPrivate, num value) {
@@ -239,7 +190,7 @@ abstract class DataTypeBase implements DataToken {
               casted.counter
                   ? new UintData(ModuleType.DATA_PROCESSOR,
                       Util.setSilentRead(DataProcessorImpl.STATE), attributes,
-                      input: null, id: DataTypeBase.NO_DATA_ID)
+                      input: null, id: DataTypeBase._noDataId)
                   : dataProcessorStateCopy(this, attributes));
         }
       case Average.ID:
@@ -254,11 +205,11 @@ abstract class DataTypeBase implements DataToken {
                 ModuleType.DATA_PROCESSOR,
                 Util.setSilentRead(DataProcessorImpl.STATE),
                 new DataAttributes(Uint8List.fromList([2]), 1, 0, false),
-                id: DataTypeBase.NO_DATA_ID));
+                id: DataTypeBase._noDataId));
       case Maths.ID:
         {
           Maths casted = config as Maths;
-          DataTypeBase processor = null;
+          DataTypeBase? processor;
           switch (casted.op) {
             case Operation.ADD:
               processor =
@@ -339,15 +290,12 @@ abstract class DataTypeBase implements DataToken {
                       input: this);
               break;
           }
-          if (processor != null) {
-            return Tuple2(processor, null);
-          }
-          break;
+          return Tuple2(processor, null);
         }
       case Pulse.ID:
         {
           Pulse casted = config as Pulse;
-          DataTypeBase processor;
+          DataTypeBase? processor;
           switch (casted.mode) {
             case PulseOutput.WIDTH:
               processor = new UintData(
@@ -381,12 +329,12 @@ abstract class DataTypeBase implements DataToken {
         }
       case ComparisonConfig.ID:
         {
-          DataTypeBase processor = null;
+          DataTypeBase? processor;
           if (config is SingleValueComparison) {
             processor =
                 dataProcessorCopy(this, this.attributes.dataProcessorCopy());
           } else if (config is MultiValueComparison) {
-            MultiValueComparison casted = config as MultiValueComparison;
+            MultiValueComparison casted = config;
             if (casted.mode == ComparisonOutput.PASS_FAIL ||
                 casted.mode == ComparisonOutput.ZONE) {
               processor = new UintData(
@@ -421,7 +369,6 @@ abstract class DataTypeBase implements DataToken {
                       new DataAttributes(Uint8List.fromList([1]), 1, 0, true)),
                   null);
           }
-          break;
         }
       case Differential.ID:
         {
@@ -443,7 +390,6 @@ abstract class DataTypeBase implements DataToken {
                       new DataAttributes(Uint8List.fromList([1]), 1, 0, true)),
                   null);
           }
-          break;
         }
       case Packer.ID:
         {
@@ -473,7 +419,7 @@ abstract class DataTypeBase implements DataToken {
 
           for (int id in casted.filterIds) {
             fusedLength +=
-                dpModule.activeProcessors[id].state.attributes.length();
+                dpModule.activeProcessors[id]?.state.attributes.length() ?? 0;
           }
 
           return Tuple2(

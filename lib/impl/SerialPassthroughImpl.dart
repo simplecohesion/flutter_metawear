@@ -26,11 +26,11 @@ import 'dart:async';
 
 import 'package:flutter_metawear/route.dart';
 import 'package:flutter_metawear/builder/route_builder.dart';
-import 'package:flutter_metawear/impl/ByteArrayData.dart';
+import 'package:flutter_metawear/impl/byte_array_data.dart';
 import 'package:flutter_metawear/impl/module_impl_base.dart';
 import 'package:flutter_metawear/impl/ModuleType.dart';
-import 'package:flutter_metawear/impl/DataAttributes.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_attributes.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'package:flutter_metawear/module/serial_passthrough.dart';
@@ -53,14 +53,14 @@ class SerialPassthroughData extends ByteArrayData {
       DataTypeBase input, DataAttributes attributes) {
     return new ByteArrayData(
         ModuleType.DATA_PROCESSOR, DataProcessorImpl.NOTIFY, attributes,
-        input: input, id: DataTypeBase.NO_DATA_ID);
+        input: input, id: DataTypeBase._noDataId);
   }
 
   DataTypeBase dataProcessorStateCopy(
       DataTypeBase input, DataAttributes attributes) {
     return new ByteArrayData(ModuleType.DATA_PROCESSOR,
         Util.setSilentRead(DataProcessorImpl.STATE), attributes,
-        input: input, id: DataTypeBase.NO_DATA_ID);
+        input: input, id: DataTypeBase._noDataId);
   }
 
   @override

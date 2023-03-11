@@ -28,13 +28,13 @@ import 'package:flutter_metawear/data.dart';
 import 'package:flutter_metawear/data_token.dart';
 import 'package:flutter_metawear/impl/DataProcessorConfig.dart';
 import 'package:flutter_metawear/impl/DataProcessorImpl.dart';
-import 'package:flutter_metawear/impl/DataTypeBase.dart';
+import 'package:flutter_metawear/impl/data_type_base.dart';
 import 'package:flutter_metawear/impl/MetaWearBoardPrivate.dart';
 import 'package:flutter_metawear/impl/UFloatData.dart';
 import 'package:flutter_metawear/impl/Util.dart';
 import 'ModuleType.dart';
-import 'DataAttributes.dart';
-import 'DataTypeBase.dart';
+import 'data_attributes.dart';
+import 'data_type_base.dart';
 import 'package:tuple/tuple.dart';
 import 'DataPrivate.dart';
 
