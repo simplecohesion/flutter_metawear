@@ -87,7 +87,7 @@ class DataPrivate implements Data {
     return value;
   }
 
-  @override
+@override
   String toString() => sprintf("{timestamp: %s, data: %s}",
       [formattedTimestamp(), Util.arrayToHexString(bytes())]);
 }
